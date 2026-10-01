@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>HealthMate – Hospital Appointment</title>
+<meta name="theme-color" content="#00b4a6"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#00b4a6;--primary-dark:#008f84;--primary-light:#e0f7f5;--text:#1a2b3c;--text-light:#5a6a7a;--bg:#f5f8fa;--border:#e8eef2;--shadow:0 4px 20px rgba(0,40,60,.08);--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.5}
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 60px rgba(0,0,0,.1)}
+.status-bar{height:28px;background:linear-gradient(135deg,#00b4a6,#1a73e8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600}
+.header{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.header-logo{display:flex;align-items:center;gap:10px}
+.header-logo img{width:44px;height:44px;object-fit:contain;border-radius:10px}
+.header-title{font-size:15px;font-weight:700}
+.header-title span{display:block;font-size:11px;font-weight:500;color:var(--primary)}
+.header-actions{display:flex;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:none;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icon-btn svg,.back-btn svg,.quick-icon svg,.settings-icon svg,.nav-item .icon svg,.dept-icon svg,.doctor-avatar svg,.med-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.quick-icon svg{width:22px;height:22px}
+.dept-icon svg{width:24px;height:24px}
+.doctor-avatar svg{width:28px;height:28px;stroke:#008f84}
+.med-icon svg{width:22px;height:22px;stroke:#e67e22}
+.nav-item .icon svg{width:22px;height:22px}
+.settings-icon svg{width:18px;height:18px}
+.back-btn{width:40px;height:40px;border-radius:12px;border:none;background:var(--primary-light);color:var(--primary);display:none;align-items:center;justify-content:center;cursor:pointer}
+.screen{display:none;padding:16px 16px 110px}
+.screen.active{display:block;animation:screenIn .4s cubic-bezier(.22,1,.36,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes screenIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes slideUpCurve{from{opacity:0;transform:translateY(100%) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes slideDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(40px)}}
+@keyframes scalePop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes pulseSoft{0%,100%{transform:scale(1);box-shadow:0 6px 20px rgba(0,180,166,.35)}50%{transform:scale(1.02);box-shadow:0 8px 28px rgba(0,180,166,.5)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes bounceIn{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.05)}70%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes cardRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px) scale(.9)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes navBounce{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes ripple{0%{transform:scale(0);opacity:.4}100%{transform:scale(2.5);opacity:0}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes progressBar{from{width:0}to{width:100%}}
+.login-screen{min-height:calc(100vh - 28px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:linear-gradient(180deg,#e0f7f5,#f5f8fa)}
+.login-logo{width:110px;height:110px;margin-bottom:16px;object-fit:contain}
+.role-tab{flex:1;border:none;background:transparent;padding:10px 8px;border-radius:12px;font-size:13px;font-weight:700;font-family:inherit;color:var(--text-light);cursor:pointer;transition:all .2s}
+.role-tab.selected{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(0,40,60,.1)}
+.login-screen h1{font-size:24px;margin-bottom:6px;text-align:center}
+.login-screen p{color:var(--text-light);margin-bottom:28px;text-align:center;font-size:14px}
+.google-btn{width:100%;max-width:320px;padding:14px 20px;border:1.5px solid var(--border);border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;gap:12px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
+.guest-btn{margin-top:16px;background:none;border:none;color:var(--primary);font-weight:600;font-size:14px;cursor:pointer}
+.hero{background:linear-gradient(135deg,#00b4a6,#1a73e8);border-radius:20px;padding:22px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden;transition:background 1.2s ease}
+.hero h1{font-size:19px;margin-bottom:6px;position:relative;z-index:2}
+.hero p{font-size:13px;opacity:.9;margin-bottom:12px;position:relative;z-index:2}
+.hero-btn{background:#fff;color:var(--primary);border:none;padding:10px 16px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;position:relative;z-index:2}
+#timeGreeting{position:relative;z-index:2;display:flex;align-items:center;gap:8px;animation:fadeSlideIn .6s ease}
+.hero-icon{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hero.period-morning{background:linear-gradient(135deg,#ff9a56 0%,#ff6b6b 40%,#feca57 100%)}
+.hero.period-afternoon{background:linear-gradient(135deg,#00b4a6 0%,#1a73e8 50%,#42a5f5 100%)}
+.hero.period-evening{background:linear-gradient(135deg,#e67e22 0%,#c0392b 45%,#8e44ad 100%)}
+.hero.period-night{background:linear-gradient(135deg,#1a237e 0%,#0d1b2a 50%,#4a148c 100%)}
+.hero::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1}
+.hero.period-morning::before{background:radial-gradient(circle at 85% 20%,rgba(255,255,200,.45) 0%,transparent 45%);animation:sunGlow 4s ease-in-out infinite}
+.hero.period-afternoon::before{background:radial-gradient(circle at 70% 10%,rgba(255,255,255,.25) 0%,transparent 40%);animation:dayShine 5s ease-in-out infinite}
+.hero.period-evening::before{background:radial-gradient(circle at 90% 80%,rgba(255,180,80,.35) 0%,transparent 50%);animation:sunsetPulse 4.5s ease-in-out infinite}
+.hero.period-night::before{background:radial-gradient(circle at 80% 15%,rgba(255,255,255,.15) 0%,transparent 25%),radial-gradient(circle at 20% 40%,rgba(180,180,255,.1) 0%,transparent 20%);animation:nightTwinkle 3s ease-in-out infinite}
+@keyframes sunGlow{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes dayShine{0%,100%{opacity:.5}50%{opacity:.9}}
+@keyframes sunsetPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes nightTwinkle{0%,100%{opacity:.4}50%{opacity:.85}}
+@keyframes floatOrb{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes spinSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.hero-icon.anim-sun{animation:floatOrb 3s ease-in-out infinite,spinSlow 20s linear infinite}
+.hero-icon.anim-moon{animation:floatOrb 4s ease-in-out infinite}
+.hero-icon.anim-cloud{animation:floatOrb 3.5s ease-in-out infinite}
+.section-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.section-title a{font-size:13px;color:var(--primary);font-weight:600;text-decoration:none}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.quick-item{background:#fff;border-radius:14px;padding:12px 6px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;animation:cardRise .45s ease both}
+.quick-item:nth-child(1){animation-delay:.05s}.quick-item:nth-child(2){animation-delay:.1s}.quick-item:nth-child(3){animation-delay:.15s}.quick-item:nth-child(4){animation-delay:.2s}.quick-item:nth-child(5){animation-delay:.25s}.quick-item:nth-child(6){animation-delay:.3s}.quick-item:nth-child(7){animation-delay:.35s}.quick-item:nth-child(8){animation-delay:.4s}
+.quick-item:active{transform:scale(.92)}
+.quick-item:hover{box-shadow:0 6px 24px rgba(0,40,60,.12)}
+.quick-icon{width:38px;height:38px;border-radius:12px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:17px;position:relative}
+.quick-icon svg{animation-duration:2.5s;animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+.quick-item:nth-child(1) .quick-icon svg{animation-name:qaBounce}
+.quick-item:nth-child(2) .quick-icon svg{animation-name:qaPulse;animation-duration:2s}
+.quick-item:nth-child(3) .quick-icon svg{animation-name:qaFloat;animation-duration:2.8s}
+.quick-item:nth-child(4) .quick-icon svg{animation-name:qaSwing;animation-duration:2.2s}
+.quick-item:nth-child(5) .quick-icon svg{animation-name:qaWiggle;animation-duration:2.6s}
+.quick-item:nth-child(6) .quick-icon svg{animation-name:qaGlow;animation-duration:2s}
+.quick-item:nth-child(7) .quick-icon svg{animation-name:qaBounce;animation-duration:2.4s}
+.quick-item:nth-child(8) .quick-icon svg{animation-name:qaPulse;animation-duration:2.1s}
+.quick-item:hover .quick-icon svg,.quick-item:active .quick-icon svg{animation-play-state:paused}
+@keyframes qaBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}60%{transform:translateY(-3px)}}
+@keyframes qaPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.85}}
+@keyframes qaFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+@keyframes qaSwing{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes qaWiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes qaGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 transparent)}50%{transform:scale(1.12);filter:drop-shadow(0 0 4px currentColor)}}
+.quick-item span{font-size:11px;font-weight:600}
+.card{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px;border:1px solid var(--border);animation:cardRise .4s ease both;transition:transform .2s,box-shadow .2s}
+.card:active{transform:scale(.98)}
+.dept-card{animation:cardRise .4s ease both}
+.dept-card:nth-child(odd){animation-delay:.05s}
+.dept-card:nth-child(even){animation-delay:.12s}
+.doctor-card{animation:slideInLeft .4s ease both}
+.schedule-item{animation:slideInRight .4s ease both}
+.doctor-card{display:flex;gap:12px;align-items:center;cursor:pointer}
+.doctor-avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#e0f7f5,#c8e6ff);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.doctor-info h3{font-size:14px;font-weight:700}
+.doctor-info p{font-size:12px;color:var(--text-light);margin-bottom:4px}
+.badge{background:var(--primary-light);color:var(--primary-dark);padding:2px 8px;border-radius:6px;font-weight:600;font-size:11px}
+.rating{color:#f5a623;font-weight:600;font-size:12px}
+.dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dept-card{background:#fff;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid var(--border);transition:transform .15s}
+.dept-card:active{transform:scale(0.96)}
+.dept-icon{width:42px;height:42px;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.dept-icon svg{width:20px;height:20px}
+.dept-card h3{font-size:12px;font-weight:700;line-height:1.3;min-height:32px;display:flex;align-items:center;justify-content:center}
+.dept-card p{font-size:10px;color:var(--text-light);margin-top:2px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.form-control{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fff;outline:none}
+.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,180,166,.15)}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235a6a7a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.time-slots,.lang-chips{display:flex;flex-wrap:wrap;gap:8px}
+.time-slot,.lang-chip{padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;background:#fff;cursor:pointer}
+.time-slot.selected,.lang-chip.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,box-shadow .2s;position:relative;overflow:hidden}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:linear-gradient(135deg,#00b4a6,#008f84);color:#fff;box-shadow:0 6px 20px rgba(0,180,166,.35);animation:pulseSoft 3s ease-in-out infinite}
+.btn-primary:active{animation:none}
+.btn-outline{background:#fff;color:var(--primary);border:1.5px solid var(--primary)}
+.btn-danger{background:#fff;color:#d93025;border:1.5px solid #d93025}
+.appt-card{display:flex;gap:12px;align-items:flex-start}
+.appt-date{background:var(--primary-light);border-radius:12px;padding:10px;text-align:center;min-width:50px}
+.appt-date .day{font-size:18px;font-weight:700;color:var(--primary-dark);line-height:1}
+.appt-date .month{font-size:10px;font-weight:600;color:var(--primary);text-transform:uppercase}
+.appt-info h3{font-size:14px;font-weight:700}
+.appt-info p{font-size:12px;color:var(--text-light)}
+.status-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;margin-top:4px}
+.status-confirmed{background:#e6f7ed;color:#00a854}
+.status-pending{background:#fff7e6;color:#d48806}
+.status-cancelled{background:#fdecea;color:#d93025}
+.cancel-btn{margin-top:6px;padding:5px 10px;font-size:11px;font-weight:600;border:1.5px solid #d93025;background:#fff;color:#d93025;border-radius:8px;cursor:pointer}
+.profile-header{text-align:center;padding:20px 0}
+.profile-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#00b4a6,#1a73e8);color:#fff;font-size:30px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.profile-header h2{font-size:18px}
+.profile-header p{color:var(--text-light);font-size:13px}
+.info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:14px}
+.info-row span:first-child{color:var(--text-light)}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.settings-item:last-child{border-bottom:none}
+.settings-left{display:flex;align-items:center;gap:12px}
+.settings-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.settings-item h4{font-size:14px;font-weight:600}
+.settings-item p{font-size:12px;color:var(--text-light)}
+.notif-section-label{font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 10px;padding:0 2px}
+.notif-card{background:#fff;border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:4px}
+.remind-label{font-size:14px;font-weight:600;margin-bottom:12px}
+.remind-chips{display:flex;flex-wrap:wrap;gap:8px}
+.remind-chip{padding:8px 14px;border-radius:20px;border:1.5px solid #d0d8e0;background:#fff;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .2s;font-family:inherit}
+.remind-chip.selected{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.notif-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.notif-row:last-child{border-bottom:none}
+.notif-row-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#e8f0fe;color:#1a73e8}
+.notif-row-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.notif-row-text{flex:1;min-width:0}
+.notif-row-text h4{font-size:14px;font-weight:600}
+.notif-row-text p{font-size:12px;color:var(--text-light);margin-top:2px}
+.toggle{position:relative;width:46px;height:28px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:#c5cdd5;border-radius:28px;transition:.25s}
+.toggle-slider:before{content:"";position:absolute;height:22px;width:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked+.toggle-slider{background:var(--primary)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(18px)}
+.legal-card{font-size:13px;line-height:1.65;color:var(--text)}
+.legal-card .legal-meta{font-size:12px;color:var(--text-light);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.legal-card h4{font-size:14px;font-weight:700;margin:16px 0 8px;color:var(--text)}
+.legal-card p{margin-bottom:10px}
+.legal-card ul{margin:0 0 12px 18px;padding:0}
+.legal-card li{margin-bottom:6px}
+.legal-card a{color:var(--primary);font-weight:600;text-decoration:none}
+.dp-header-bar{background:linear-gradient(135deg,#00b4a6,#1a73e8);color:#fff;padding:14px 16px;margin:-16px -16px 16px;display:flex;align-items:center;gap:12px;border-radius:0 0 16px 16px}
+.dp-header-bar h2{font-size:17px;font-weight:700}
+.dp-card{background:#fff;border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px}
+.dp-top{display:flex;gap:14px;align-items:flex-start}
+.dp-avatar{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#e0f7f5,#e3f2fd);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0;position:relative}
+.dp-avatar .dot{position:absolute;bottom:4px;right:4px;width:12px;height:12px;background:#00c853;border:2px solid #fff;border-radius:50%}
+.dp-name{font-size:17px;font-weight:700}
+.dp-degree{font-size:12px;color:var(--text-light);margin:2px 0 8px}
+.dp-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.dp-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.dp-badge.avail{background:#e8f5e9;color:#2e7d32}
+.dp-badge.fee{background:#e3f2fd;color:#1565c0}
+.dp-spec{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--primary);background:var(--primary-light);padding:6px 12px;border-radius:20px;margin-top:4px}
+.dp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;padding:12px 0 4px}
+.dp-stats .st{border-right:1px solid var(--border)}
+.dp-stats .st:last-child{border-right:none}
+.dp-stats .n{font-size:16px;font-weight:700}
+.dp-stats .l{font-size:11px;color:var(--text-light);margin-top:2px}
+.dp-follow{background:none;border:none;cursor:pointer;color:#999;font-size:20px;padding:0}
+.dp-follow.on{color:#e91e63}
+.dp-clinic-name{font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dp-active{font-size:11px;font-weight:600;color:#2e7d32;background:#e8f5e9;padding:3px 8px;border-radius:10px}
+.dp-pay{display:inline-flex;align-items:center;gap:6px;background:#e8f5e9;color:#2e7d32;font-size:13px;font-weight:700;padding:8px 12px;border-radius:10px;margin:10px 0}
+.dp-addr{font-size:12px;color:var(--text-light);line-height:1.5;margin-bottom:4px}
+.dp-phone{font-size:13px;color:var(--text);font-weight:500;margin-bottom:10px}
+.dp-actions{display:flex;gap:8px;margin-bottom:14px}
+.dp-actions button{flex:1;padding:10px;border-radius:12px;border:none;font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;background:#e3f2fd;color:#1565c0}
+.dp-sched-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.dp-sched-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-light);margin-bottom:12px;gap:8px}
+.dp-book{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#1a73e8,#00b4a6);color:#fff;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(26,115,232,.3)}
+.dp-clinic-link{display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:600;color:#1a73e8;text-decoration:none}
+.stars{display:flex;gap:6px;margin:8px 0}
+.star{font-size:28px;cursor:pointer;color:#ddd}
+.star.active{color:#f5a623}
+.sub-card{background:linear-gradient(135deg,#1a73e8,#00b4a6);border-radius:18px;padding:22px;color:#fff;margin-bottom:14px}
+.sub-card h3{font-size:17px;margin-bottom:4px}
+.sub-card .price{font-size:26px;font-weight:700;margin:10px 0}
+.sub-card ul{list-style:none;margin-bottom:14px}
+.sub-card li{font-size:13px;margin-bottom:5px;opacity:.95}
+.sub-card li::before{content:'✓ ';font-weight:700}
+.suggestion-card{background:#fff8e6;border-left:4px solid #f5a623;border-radius:0 12px 12px 0;padding:12px;margin-bottom:10px}
+.suggestion-card h4{font-size:13px;margin-bottom:3px}
+.suggestion-card p{font-size:12px;color:var(--text-light)}
+.schedule-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.schedule-item:last-child{border-bottom:none}
+.med-icon{width:42px;height:42px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.med-info{flex:1}
+.med-info h4{font-size:13px;font-weight:700}
+.med-info p{font-size:12px;color:var(--text-light)}
+.med-time{font-size:12px;font-weight:700;color:var(--primary);background:var(--primary-light);padding:5px 10px;border-radius:8px}
+.med-actions{display:flex;gap:6px;margin-top:4px}
+.med-actions button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(10,30,50,.45);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .3s}
+.overlay.show{display:flex;opacity:1}
+.confirm-card{background:#fff;width:100%;max-width:430px;border-radius:28px 28px 0 0;padding:28px 20px 36px;transform:translateY(110%) scale(.96);transition:transform .55s cubic-bezier(.22,1,.36,1);box-shadow:0 -12px 48px rgba(0,40,60,.22);position:relative}
+.overlay.show .confirm-card{transform:translateY(0) scale(1);animation:slideUpCurve .55s cubic-bezier(.22,1,.36,1)}
+.confirm-card::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:48px;height:5px;background:#d0d8e0;border-radius:10px}
+.confirm-icon{width:70px;height:70px;background:linear-gradient(135deg,#00c853,#00b4a6);border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;box-shadow:0 10px 30px rgba(0,200,83,.35);animation:scalePop .55s .2s both}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-card h2{text-align:center;font-size:19px;margin-bottom:6px}
+.confirm-card>p{text-align:center;color:var(--text-light);font-size:13px;margin-bottom:18px}
+.confirm-details{background:var(--bg);border-radius:14px;padding:14px;margin-bottom:18px}
+.confirm-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.confirm-row span:first-child{color:var(--text-light)}
+.confirm-row span:last-child{font-weight:600}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,.05)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--text-light);font-size:10px;font-weight:600;padding:6px 8px;transition:color .2s}
+.nav-item.active{color:var(--primary)}
+.nav-item.active .icon{animation:navBounce .4s cubic-bezier(.34,1.56,.64,1)}
+.nav-item .icon{font-size:20px;transition:transform .2s}
+.nav-item:active .icon{transform:scale(.85)}
+.time-slot{transition:transform .15s,background .2s,color .2s}
+.time-slot:active{transform:scale(.94)}
+.time-slot.selected{animation:scalePop .35s ease}
+.lang-chip{transition:transform .15s,background .2s}
+.lang-chip:active{transform:scale(.94)}
+.lang-chip.selected{animation:scalePop .35s ease}
+.status-pill{animation:fadeSlideIn .3s ease}
+.empty{text-align:center;padding:40px 20px;color:var(--text-light)}
+.empty-icon{font-size:42px;margin-bottom:10px}
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-20px) scale(.9);background:var(--text);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:2000;pointer-events:none;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1);animation:toastIn .4s cubic-bezier(.34,1.56,.64,1)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+<div id="loginScreen" class="login-screen">
+<img src="logo.jpg" alt="HealthMate" class="login-logo"/>
+<h1 data-i18n="welcome">Welcome to HealthMate</h1>
+<p data-i18n="login_sub">Choose your role to sign in securely</p>
+<div style="display:flex;gap:6px;margin:16px 0 18px;background:#eef2f6;padding:4px;border-radius:14px;width:100%;max-width:340px">
+<button type="button" class="role-tab selected" data-role="patient" onclick="selectLoginRole(this)">Patient</button>
+<button type="button" class="role-tab" data-role="doctor" onclick="selectLoginRole(this)">Doctor</button>
+<button type="button" class="role-tab" data-role="admin" onclick="selectLoginRole(this)">Admin</button>
+</div>
+<div id="loginRoleHint" style="font-size:12px;color:var(--text-light);margin-bottom:12px;text-align:center;max-width:320px">Personal portal — book doctors, view history &amp; prescriptions</div>
+<div style="width:100%;max-width:340px;text-align:left">
+<div class="form-group"><label>Email / ID</label><input type="text" class="form-control" id="loginEmail" placeholder="Email or staff ID"/></div>
+<div class="form-group"><label>Password</label><input type="password" class="form-control" id="loginPassword" placeholder="Password"/></div>
+</div>
+<button class="btn btn-primary" style="max-width:340px;margin-top:4px" onclick="loginWithRole()">Sign In</button>
+<button class="google-btn" style="max-width:340px;margin-top:10px" onclick="loginWithGoogle()">
+<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+<span>Patient · Google Sign-in</span>
+</button>
+<button class="guest-btn" style="max-width:340px" onclick="loginAsGuest()" data-i18n="continue_guest">Continue as Guest (Patient)</button>
+<p style="margin-top:12px;font-size:11px;color:#8a9aa8;text-align:center;max-width:320px">Demo: Admin <b>admin / admin123</b> · Doctor <b>doctor / doc123</b> · Patient any email</p>
+<p style="margin-top:20px;font-size:11px;color:#8a9aa8;text-align:center;line-height:1.5">Designed &amp; Developed by<br><strong style="color:var(--primary)">Sayma Yameen &amp; Lubna Fatema</strong><br><span style="font-size:10px">B.Sc (CS) III YMN</span></p>
+</div>
+
+<!-- Admin App -->
+<div id="adminApp" class="hidden">
+<div class="status-bar" style="background:linear-gradient(135deg,#1a237e,#3949ab)"><span>HealthMate Admin</span></div>
+<div class="header"><div class="header-title" style="flex:1">Admin Panel<span>System control</span></div>
+<button class="icon-btn" onclick="roleLogout()" title="Logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div>
+<div class="screen active" style="display:block;padding:16px 16px 40px">
+<div class="section-title">Dashboard</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+<div class="card" style="margin:0;text-align:center"><div style="font-size:22px;font-weight:700;color:#1a73e8" id="admDocCount">0</div><div style="font-size:11px;color:var(--text-light)">Doctors</div></div>
+<div class="card" style="margin:0;text-align:center"><div style="font-size:22px;font-weight:700;color:#00b4a6" id="admApptCount">0</div><div style="font-size:11px;color:var(--text-light)">Appointments</div></div>
+<div class="card" style="margin:0;text-align:center"><div style="font-size:22px;font-weight:700;color:#7b1fa2" id="admPayCount">0</div><div style="font-size:11px;color:var(--text-light)">Payments</div></div>
+<div class="card" style="margin:0;text-align:center"><div style="font-size:22px;font-weight:700;color:#e65100" id="admStaffCount">3</div><div style="font-size:11px;color:var(--text-light)">Staff</div></div>
+</div>
+<div class="section-title">Manage doctors &amp; staff</div>
+<div class="card" id="adminDoctorsList"></div>
+<button class="btn btn-primary" style="margin-bottom:12px" onclick="adminAddDoctor()">+ Add Doctor</button>
+<div class="section-title">All appointments</div>
+<div id="adminApptsList"></div>
+<div class="section-title">Billing &amp; reports</div>
+<div id="adminBillingList"></div>
+<div class="section-title">System feedback</div>
+<div id="adminFeedbackList"></div>
+</div>
+</div>
+
+<!-- Doctor App -->
+<div id="doctorApp" class="hidden">
+<div class="status-bar" style="background:linear-gradient(135deg,#00695c,#00b4a6)"><span>HealthMate Doctor</span></div>
+<div class="header"><div class="header-title" style="flex:1">Doctor Workspace<span id="docWorkspaceName">Care panel</span></div>
+<button class="icon-btn" onclick="roleLogout()" title="Logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div>
+<div class="screen active" style="display:block;padding:16px 16px 40px">
+<div class="section-title">Today's schedule</div>
+<div id="docScheduleList"></div>
+<div class="section-title">Assigned patients</div>
+<div id="docPatientsList"></div>
+<div class="section-title">Update consultation notes</div>
+<div class="card">
+<div class="form-group"><label>Patient name</label><input type="text" class="form-control" id="docNotePatient" placeholder="Patient"/></div>
+<div class="form-group"><label>Diagnosis / notes</label><textarea class="form-control" id="docNoteText" rows="3" placeholder="Medical history, test notes..."></textarea></div>
+<div class="form-group"><label>Prescription</label><input type="text" class="form-control" id="docRx" placeholder="Medicines"/></div>
+<button class="btn btn-primary" onclick="saveDoctorNote()">Save notes</button>
+</div>
+<div class="section-title">My notes history</div>
+<div id="docNotesList"></div>
+</div>
+</div>
+
+<div id="mainApp" class="hidden">
+<div class="status-bar"><span>HealthMate</span></div>
+<div class="header">
+<div class="header-logo" id="headerLogoArea">
+<img src="logo.jpg" alt="HealthMate"/>
+<div class="header-title">HealthMate<span data-i18n="tagline">Care Made Simple</span></div>
+</div>
+<button class="back-btn" id="backBtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+<div class="header-actions">
+<button class="icon-btn" onclick="showScreen('settings')" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+<button class="icon-btn" onclick="showScreen('profile')" title="Profile"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+</div>
+</div>
+
+<div class="screen active" id="home">
+<div class="hero">
+<p id="timeGreeting" style="font-size:13px;opacity:.95;margin-bottom:4px;font-weight:500">Good morning</p>
+<h1 id="homeGreeting" data-i18n="welcome_user">Welcome to HealthMate</h1>
+<p data-i18n="hero_sub">Book appointments with top specialists in just a few taps.</p>
+<button class="hero-btn" onclick="clickSound();showScreen('book')" data-i18n="book_now">Book Appointment</button>
+</div>
+
+<!-- Online Consultation on Home -->
+<div class="card" style="background:linear-gradient(135deg,#f3e5f5,#e8eaf6);border:none;margin-bottom:16px;cursor:pointer" onclick="clickSound();showScreen('onlineConsult')">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:48px;height:48px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;color:#7b1fa2;flex-shrink:0">
+<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2"/></svg>
+</div>
+<div style="flex:1">
+<h3 style="font-size:15px;font-weight:700;color:#4a148c" data-i18n="online_consult">Online Consultation</h3>
+<p style="font-size:12px;color:#6a1b9a;margin-top:2px">Book online with language choice</p>
+<p style="font-size:11px;color:#7b1fa2;margin-top:4px;line-height:1.4">English · Hindi · Urdu · Punjabi · Kannada · Marathi · Tamil · Telugu · Gujarati</p>
+</div>
+<span style="font-size:20px;color:#7b1fa2">›</span>
+</div>
+</div>
+
+<div class="section-title" data-i18n="quick_actions">Quick Actions</div>
+<div class="quick-grid">
+<div class="quick-item" onclick="clickSound();showScreen('doctors')"><div class="quick-icon" style="background:#e0f7f5;color:#008f84"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span data-i18n="doctors">Doctors</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('departments')"><div class="quick-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M10 9h4"/><path d="M10 12h4"/></svg></div><span data-i18n="departments">Departments</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('onlineConsult')"><div class="quick-icon" style="background:#f3e5f5;color:#7b1fa2"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2"/></svg></div><span data-i18n="online">Online</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('labTests')"><div class="quick-icon" style="background:#e8f5e9;color:#2e7d32"><svg viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></div><span>Lab Tests</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('clinics')"><div class="quick-icon" style="background:#fce4ec;color:#c2185b"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M10 9h4"/><path d="M10 12h4"/></svg></div><span>Clinic</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('schedule')"><div class="quick-icon" style="background:#fff3e0;color:#e67e22"><svg viewBox="0 0 24 24"><path d="M10.5 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M2 10h20"/><path d="M17 14v6"/><path d="M14 17h6"/></svg></div><span data-i18n="schedule">Schedule</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('paymentHistory')"><div class="quick-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><span>Payments</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('ambulance')"><div class="quick-icon" style="background:#ffebee;color:#c62828"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M6 8v5M8.5 10.5h-5"/></svg></div><span>Ambulance</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('bloodBank')"><div class="quick-icon" style="background:#fce4ec;color:#ad1457"><svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div><span>Blood Bank</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('scanCentres')"><div class="quick-icon" style="background:#e8eaf6;color:#3949ab"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><circle cx="12" cy="10" r="3"/></svg></div><span>CT / X-Ray</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('genericStores')"><div class="quick-icon" style="background:#e0f2f1;color:#00796b"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span>Generic Store</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('stores24')"><div class="quick-icon" style="background:#fff8e1;color:#f9a825"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>24h Pharmacy</span></div>
+<div class="quick-item" onclick="clickSound();showScreen('oxygen')"><div class="quick-icon" style="background:#e3f2fd;color:#0277bd"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6c0 4 6 11 6 11s6-7 6-11a6 6 0 0 0-6-6z"/><circle cx="12" cy="9" r="2"/></svg></div><span>Oxygen</span></div>
+</div>
+
+<!-- Emergency services highlight -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+<div class="card" style="background:linear-gradient(135deg,#ffebee,#fff);border:1px solid #ffcdd2;cursor:pointer;margin:0" onclick="clickSound();showScreen('ambulance')">
+<div style="font-size:22px;margin-bottom:6px">🚑</div>
+<div style="font-size:13px;font-weight:700;color:#c62828">Ambulance</div>
+<div style="font-size:11px;color:var(--text-light);margin-top:2px">24×7 emergency</div>
+</div>
+<div class="card" style="background:linear-gradient(135deg,#fce4ec,#fff);border:1px solid #f8bbd0;cursor:pointer;margin:0" onclick="clickSound();showScreen('bloodBank')">
+<div style="font-size:22px;margin-bottom:6px">🩸</div>
+<div style="font-size:13px;font-weight:700;color:#ad1457">Blood Bank</div>
+<div style="font-size:11px;color:var(--text-light);margin-top:2px">Donate &amp; request</div>
+</div>
+</div>
+
+<div class="section-title"><span data-i18n="suggestions">Doctor Suggestions</span></div>
+<div id="suggestionsList"></div>
+<div class="section-title"><span data-i18n="top_doctors">Top Doctors</span><a href="#" onclick="showScreen('doctors');return false" data-i18n="see_all">See all</a></div>
+<div id="homeDoctors"></div>
+</div>
+
+<div class="screen" id="doctors">
+<div class="section-title" style="margin-bottom:12px">All Doctors</div>
+<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+<input type="search" class="form-control" id="doctorSearch" placeholder="Search doctor, speciality, degree" oninput="filterDoctors()" onkeydown="if(event.key==='Enter')saveSearchHistory()" style="flex:1;border-radius:24px;padding-left:16px;margin:0"/>
+<button type="button" class="icon-btn" onclick="clickSound();toggleDoctorFilters()" title="Filters" style="flex-shrink:0"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg></button>
+</div>
+<div id="searchHistoryBox" style="display:none;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+<span style="font-size:12px;font-weight:700;color:var(--text-light)">Search history</span>
+<a href="#" onclick="clearSearchHistory();return false" style="font-size:11px;color:#d93025;text-decoration:none">Clear</a>
+</div>
+<div id="searchHistoryList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+</div>
+<div id="doctorFilterPanel" style="display:none;margin-bottom:12px" class="card">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">Filter by</div>
+<div class="remind-chips" id="doctorSpecFilters">
+<button type="button" class="remind-chip selected" data-filter="all" onclick="setDoctorFilter(this)">All</button>
+<button type="button" class="remind-chip" data-filter="available" onclick="setDoctorFilter(this)">Available</button>
+<button type="button" class="remind-chip" data-filter="Cardiologist" onclick="setDoctorFilter(this)">Cardiology</button>
+<button type="button" class="remind-chip" data-filter="Orthopedic" onclick="setDoctorFilter(this)">Orthopedic</button>
+<button type="button" class="remind-chip" data-filter="Pediatrician" onclick="setDoctorFilter(this)">Pediatrics</button>
+<button type="button" class="remind-chip" data-filter="Neurologist" onclick="setDoctorFilter(this)">Neurology</button>
+<button type="button" class="remind-chip" data-filter="Dermatologist" onclick="setDoctorFilter(this)">Dermatology</button>
+<button type="button" class="remind-chip" data-filter="General Physician" onclick="setDoctorFilter(this)">General</button>
+<button type="button" class="remind-chip" data-filter="ENT" onclick="setDoctorFilter(this)">ENT</button>
+<button type="button" class="remind-chip" data-filter="Surgeon" onclick="setDoctorFilter(this)">Surgery</button>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap">
+<div>
+<div id="doctorCountLabel" style="font-size:14px;font-weight:700">0 doctors</div>
+<div id="doctorCountSub" style="font-size:11px;color:var(--text-light)">Search or scroll</div>
+</div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<button type="button" class="remind-chip selected" id="sortRelevance" onclick="setDoctorSort('relevance')">Relevance</button>
+<button type="button" class="remind-chip" id="sortFeeAsc" onclick="setDoctorSort('feeAsc')">↑ ₹</button>
+<button type="button" class="remind-chip" id="sortFeeDesc" onclick="setDoctorSort('feeDesc')">↓ ₹</button>
+</div>
+</div>
+<div id="doctorsList"></div>
+</div>
+
+<div class="screen" id="doctorProfile">
+<div class="dp-header-bar"><button class="back-btn" style="display:flex;background:rgba(255,255,255,.2);color:#fff" onclick="goBack()"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="15 18 9 12 15 6"/></svg></button><h2>Doctor's Profile</h2></div>
+<div id="doctorProfileBody"></div>
+</div>
+<div class="screen" id="departments">
+<div class="section-title" data-i18n="departments">Find Specialists</div>
+<div class="form-group" style="margin-bottom:14px">
+<input type="search" class="form-control" id="deptSearch" placeholder="Search specialty..." oninput="filterDepartments(this.value)" style="border-radius:24px;padding-left:16px"/>
+</div>
+<div class="dept-grid" id="deptGrid"></div>
+</div>
+
+<div class="screen" id="book">
+<div class="section-title" data-i18n="book_appointment">Book Appointment</div>
+<div class="form-group"><label data-i18n="select_dept">Select Department</label><select class="form-control" id="deptSelect"><option value="">Choose</option><option>Cardiology</option><option>Orthopedics</option><option>Pediatrics</option><option>Neurology</option><option>Dermatology</option><option>General Medicine</option></select></div>
+<div class="form-group"><label data-i18n="select_doctor">Select Doctor</label><select class="form-control" id="doctorSelect"><option value="">Choose</option><option>Dr. Ananya Sharma – Cardiology</option><option>Dr. Rajesh Mehta – Orthopedics</option><option>Dr. Priya Nair – Pediatrics</option><option>Dr. Vikram Singh – Neurology</option><option>Dr. Sneha Patel – Dermatology</option></select></div>
+<div class="form-group"><label data-i18n="preferred_date">Preferred Date</label><input type="date" class="form-control" id="apptDate"/></div>
+<div class="form-group"><label data-i18n="time_slots">Time Slots</label><div class="time-slots" id="timeSlots"><div class="time-slot" onclick="selectTime(this)">09:00 AM</div><div class="time-slot" onclick="selectTime(this)">10:30 AM</div><div class="time-slot" onclick="selectTime(this)">12:00 PM</div><div class="time-slot" onclick="selectTime(this)">02:30 PM</div><div class="time-slot" onclick="selectTime(this)">04:00 PM</div><div class="time-slot" onclick="selectTime(this)">05:30 PM</div></div></div>
+<button class="btn btn-primary" onclick="goToPatientDetails()" data-i18n="continue">Continue →</button>
+</div>
+
+<div class="screen" id="onlineConsult">
+<div class="section-title" data-i18n="online_consult">Online Doctor Consultation</div>
+<div class="form-group"><label data-i18n="select_doctor">Select Doctor</label><select class="form-control" id="onlineDoctor"><option value="">Choose</option><option>Dr. Ananya Sharma – Cardiology</option><option>Dr. Rajesh Mehta – Orthopedics</option><option>Dr. Priya Nair – Pediatrics</option><option>Dr. Vikram Singh – Neurology</option><option>Dr. Sneha Patel – Dermatology</option></select></div>
+<div class="form-group"><label data-i18n="consult_lang">Consultation Language</label>
+<div class="lang-chips">
+<div class="lang-chip" onclick="selectConsultLang(this)">English</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">हिन्दी</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">اردو</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">ਪੰਜਾਬੀ</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">ಕನ್ನಡ</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">मराठी</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">தமிழ்</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">తెలుగు</div>
+<div class="lang-chip" onclick="selectConsultLang(this)">ગુજરાતી</div>
+</div></div>
+<div class="form-group"><label data-i18n="preferred_date">Preferred Date</label><input type="date" class="form-control" id="onlineDate"/></div>
+<div class="form-group"><label data-i18n="time_slots">Time Slot</label><div class="time-slots"><div class="time-slot" onclick="selectOnlineTime(this)">10:00 AM</div><div class="time-slot" onclick="selectOnlineTime(this)">11:30 AM</div><div class="time-slot" onclick="selectOnlineTime(this)">03:00 PM</div><div class="time-slot" onclick="selectOnlineTime(this)">05:00 PM</div><div class="time-slot" onclick="selectOnlineTime(this)">07:00 PM</div></div></div>
+<button class="btn btn-primary" onclick="bookOnlineConsult()" data-i18n="book_online">Book Online Consultation</button>
+</div>
+
+<div class="screen" id="patient">
+<div class="section-title" data-i18n="patient_details">Patient Details</div>
+<div class="form-group"><label data-i18n="full_name">Full Name</label><input type="text" class="form-control" id="patientName" placeholder="Enter full name"/></div>
+<div class="form-group"><label data-i18n="age">Age</label><input type="tel" class="form-control" id="patientAge" placeholder="Age" maxlength="2" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)"/></div>
+<div class="form-group"><label data-i18n="gender">Gender</label><select class="form-control" id="patientGender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div class="form-group"><label data-i18n="phone">Phone Number (10 digits)</label><input type="tel" class="form-control" id="patientPhone" placeholder="9876543210" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"/></div>
+<div class="form-group"><label data-i18n="reason">Reason (optional)</label><textarea class="form-control" id="patientReason" rows="3"></textarea></div>
+<button class="btn btn-primary" onclick="submitAppointment()" data-i18n="confirm_appt">Confirm Appointment</button>
+</div>
+
+<div class="screen" id="appointments">
+<div class="section-title"><span data-i18n="my_appointments">My Appointments</span><a href="#" onclick="exportPatientData();return false" data-i18n="export">Export</a></div>
+<div id="appointmentsList"></div>
+</div>
+
+<div class="screen" id="schedule">
+<div class="section-title"><span data-i18n="tablet_schedule">Patient Tablet Schedule</span><a href="#" onclick="addMedicine();return false" data-i18n="add">+ Add</a></div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:12px" data-i18n="schedule_note">Set time · enable alarm for loud medicine reminders.</p>
+<div class="card" id="scheduleList"></div>
+</div>
+
+<div class="screen" id="profile">
+<div class="profile-header">
+<div class="profile-avatar" id="profileAvatar">U</div>
+<h2 id="profileName">User</h2>
+<p id="profileEmail">guest@healthmate.app</p>
+</div>
+<div class="card">
+<div class="info-row"><span data-i18n="full_name">Full Name</span><span id="pName">—</span></div>
+<div class="info-row"><span data-i18n="phone">Phone</span><span id="pPhone">—</span></div>
+<div class="info-row"><span data-i18n="age">Age</span><span id="pAge">—</span></div>
+<div class="info-row"><span data-i18n="gender">Gender</span><span id="pGender">—</span></div>
+<div class="info-row"><span data-i18n="blood">Blood Group</span><span id="pBlood">—</span></div>
+</div>
+<button class="btn btn-outline" style="margin-top:12px" onclick="editProfile()" data-i18n="edit_profile">Edit Profile</button>
+<button class="btn btn-danger" style="margin-top:10px" onclick="logout()" data-i18n="logout">Logout</button>
+</div>
+
+<div class="screen" id="settings">
+<div class="section-title" data-i18n="settings">Settings</div>
+<div class="card">
+<div class="settings-item" onclick="clickSound();showScreen('notifications')"><div class="settings-left"><div class="settings-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div><h4>Notifications</h4><p>Reminders & alerts</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="showLanguagePicker()"><div class="settings-left"><div class="settings-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div><h4 data-i18n="app_language">App Language</h4><p id="currentLangLabel">English</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('onlineConsult')"><div class="settings-left"><div class="settings-icon" style="background:#f3e5f5;color:#7b1fa2"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div><h4 data-i18n="online_consult">Online Consultation</h4><p>Video/phone consult</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('subscription')"><div class="settings-left"><div class="settings-icon" style="background:#fff3e0;color:#e67e22"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><h4 data-i18n="subscription">Subscription</h4><p data-i18n="sub_desc">Premium plans</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="showScreen('reviews')"><div class="settings-left"><div class="settings-icon" style="background:#f3e5f5;color:#7b1fa2"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div><h4 data-i18n="patient_reviews">Patient Reviews</h4><p data-i18n="reviews_desc">Rate your doctors</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('paymentHistory')"><div class="settings-left"><div class="settings-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div><h4>Payment History</h4><p>View all payments</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('labTests')"><div class="settings-left"><div class="settings-icon" style="background:#e8f5e9;color:#2e7d32"><svg viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></div><div><h4>Lab Testing</h4><p>Book lab tests</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="exportPatientData()"><div class="settings-left"><div class="settings-icon" style="background:#e8f5e9;color:#2e7d32"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><h4 data-i18n="export_data">Export Patient Data</h4><p>CSV for Google Drive</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('privacy')"><div class="settings-left"><div class="settings-icon" style="background:#e8eaf6;color:#3949ab"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><h4>Privacy Policy</h4><p>How we protect your data</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('terms')"><div class="settings-left"><div class="settings-icon" style="background:#fff3e0;color:#e65100"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div><h4>Terms &amp; Conditions</h4><p>Rules for using HealthMate</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('permissions')"><div class="settings-left"><div class="settings-icon" style="background:#e8eaf6;color:#5c6bc0"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><h4>App Permissions</h4><p>Camera, location, audio, storage</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('help')"><div class="settings-left"><div class="settings-icon" style="background:#e0f7f5;color:#008f84"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><h4>Help &amp; Support</h4><p>Contact us for help</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="clickSound();showScreen('about')"><div class="settings-left"><div class="settings-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><div><h4>About Us</h4><p>App info &amp; team</p></div></div><span>›</span></div>
+<div class="settings-item" onclick="logout()"><div class="settings-left"><div class="settings-icon" style="background:#fdecea;color:#c62828"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div><h4 data-i18n="logout">Logout</h4><p data-i18n="logout_desc">Sign out</p></div></div><span>›</span></div>
+</div>
+<p style="margin-top:24px;font-size:11px;color:#8a9aa8;text-align:center;line-height:1.5">Designed &amp; Developed by<br><strong style="color:var(--primary)">Sayma Yameen &amp; Lubna Fatema</strong><br><span style="font-size:10px">B.Sc (CS) III YMN</span></p>
+</div>
+
+<div class="screen" id="subscription">
+<div class="section-title" data-i18n="subscription">Subscription Plans</div>
+<div class="card"><h4 style="margin-bottom:6px" data-i18n="free_plan">Free Plan</h4><p style="font-size:13px;color:var(--text-light)" data-i18n="free_desc">Basic appointment booking and limited online consults.</p><p style="font-size:18px;font-weight:700;color:var(--text);margin-top:8px">₹0</p></div>
+<div class="sub-card" style="margin-bottom:14px">
+<h3>HealthMate Basic</h3>
+<div class="price">₹299<span style="font-size:14px;font-weight:500">/month</span></div>
+<ul>
+<li>Online consultations (limited)</li>
+<li>Appointment booking</li>
+<li>Medicine reminders</li>
+<li>Payment history</li>
+</ul>
+<button class="btn" style="background:#fff;color:var(--primary)" onclick="subscribeNow(299,'Basic')">Subscribe ₹299</button>
+</div>
+<div class="sub-card" style="background:linear-gradient(135deg,#1a73e8,#7b1fa2)">
+<h3 data-i18n="premium">HealthMate Premium</h3>
+<div class="price">₹599<span style="font-size:14px;font-weight:500">/month</span></div>
+<ul>
+<li data-i18n="sub1">Unlimited online consultations</li>
+<li data-i18n="sub2">Priority appointment booking</li>
+<li data-i18n="sub3">Medicine reminders + loud alarm</li>
+<li data-i18n="sub4">Health reports storage</li>
+<li data-i18n="sub5">24/7 chat support</li>
+</ul>
+<button class="btn" style="background:#fff;color:#1a73e8" onclick="subscribeNow(599,'Premium')">Subscribe ₹599</button>
+</div>
+</div>
+
+<div class="screen" id="reviews">
+<div class="section-title" data-i18n="patient_reviews">Patient Reviews</div>
+<div class="card">
+<div class="form-group"><label data-i18n="select_doctor">Select Doctor</label><select class="form-control" id="reviewDoctor"><option value="">Choose</option><option>Dr. Ananya Sharma</option><option>Dr. Rajesh Mehta</option><option>Dr. Priya Nair</option><option>Dr. Vikram Singh</option><option>Dr. Sneha Patel</option></select></div>
+<div class="form-group"><label data-i18n="your_rating">Your Rating</label><div class="stars" id="starRating"><span class="star" data-v="1" onclick="setRating(1)">★</span><span class="star" data-v="2" onclick="setRating(2)">★</span><span class="star" data-v="3" onclick="setRating(3)">★</span><span class="star" data-v="4" onclick="setRating(4)">★</span><span class="star" data-v="5" onclick="setRating(5)">★</span></div></div>
+<div class="form-group"><label data-i18n="your_review">Your Review</label><textarea class="form-control" id="reviewText" rows="3"></textarea></div>
+<button class="btn btn-primary" onclick="submitReview()" data-i18n="submit_review">Submit Review</button>
+</div>
+<div class="section-title" style="margin-top:18px" data-i18n="recent_reviews">Recent Reviews</div>
+<div id="reviewsList"></div>
+</div>
+
+<div class="screen" id="labTests">
+<div class="section-title">Lab Testing Facility</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:14px">Book diagnostic tests at HealthMate Lab</p>
+<div id="labTestsList"></div>
+</div>
+
+<div class="screen" id="clinics">
+<div class="section-title">Clinics</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:14px">Partner clinics &amp; hospital centers</p>
+<input type="search" class="form-control" id="clinicSearch" placeholder="Search clinic or area..." oninput="renderClinics()" style="border-radius:24px;padding-left:16px;margin-bottom:12px"/>
+<div id="clinicsList"></div>
+</div>
+
+<div class="screen" id="ambulance">
+<div class="section-title">Ambulance Services</div>
+<div class="card" style="background:linear-gradient(135deg,#c62828,#e53935);color:#fff;border:none">
+<h3 style="font-size:16px;margin-bottom:6px">24×7 Emergency Ambulance</h3>
+<p style="font-size:13px;opacity:.95">Fast response for medical emergencies. Call now or request a pickup.</p>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:10px">Emergency numbers</h4>
+<a href="tel:108" class="settings-item" style="text-decoration:none;color:inherit" onclick="clickSound()">
+<div class="settings-left"><div class="settings-icon" style="background:#ffebee;color:#c62828"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.1.74.3 1.46.6 2.15a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.69.3 1.41.5 2.15.6A2 2 0 0 1 22 16.92z"/></svg></div><div><h4>National Ambulance</h4><p>108</p></div></div><span style="color:#c62828;font-weight:700">Call ›</span>
+</a>
+<a href="tel:102" class="settings-item" style="text-decoration:none;color:inherit" onclick="clickSound()">
+<div class="settings-left"><div class="settings-icon" style="background:#fff3e0;color:#e65100"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.1.74.3 1.46.6 2.15a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.69.3 1.41.5 2.15.6A2 2 0 0 1 22 16.92z"/></svg></div><div><h4>Pregnancy / Medical</h4><p>102</p></div></div><span style="color:#e65100;font-weight:700">Call ›</span>
+</a>
+<a href="tel:8421293110" class="settings-item" style="text-decoration:none;color:inherit;border-bottom:none" onclick="clickSound()">
+<div class="settings-left"><div class="settings-icon" style="background:#e0f7f5;color:#008f84"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.1.74.3 1.46.6 2.15a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.69.3 1.41.5 2.15.6A2 2 0 0 1 22 16.92z"/></svg></div><div><h4>HealthMate Desk</h4><p>8421293110</p></div></div><span style="color:var(--primary);font-weight:700">Call ›</span>
+</a>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Request ambulance</h4>
+<div class="form-group"><label>Patient name</label><input type="text" class="form-control" id="ambName" placeholder="Full name"/></div>
+<div class="form-group"><label>Phone</label><input type="tel" class="form-control" id="ambPhone" placeholder="10-digit number" maxlength="10"/></div>
+<div class="form-group"><label>Pickup location</label><input type="text" class="form-control" id="ambLoc" placeholder="Address / landmark"/></div>
+<button class="btn btn-primary" style="background:linear-gradient(135deg,#c62828,#e53935)" onclick="requestAmbulance()">Request Now</button>
+</div>
+</div>
+
+<div class="screen" id="bloodBank">
+<div class="section-title">Blood Bank</div>
+<div class="card" style="background:linear-gradient(135deg,#ad1457,#e91e63);color:#fff;border:none">
+<h3 style="font-size:16px;margin-bottom:6px">Blood Bank Services</h3>
+<p style="font-size:13px;opacity:.95">Check availability, request blood, or register as a donor.</p>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:10px">Blood group availability</h4>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="bloodGroupsGrid">
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">A+</div><div style="font-size:11px;color:#2e7d32">Available</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">A-</div><div style="font-size:11px;color:#e65100">Low</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">B+</div><div style="font-size:11px;color:#2e7d32">Available</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">B-</div><div style="font-size:11px;color:#c62828">Urgent</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">O+</div><div style="font-size:11px;color:#2e7d32">Available</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">O-</div><div style="font-size:11px;color:#c62828">Urgent</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">AB+</div><div style="font-size:11px;color:#2e7d32">Available</div></div>
+<div style="text-align:center;padding:10px;background:#ffebee;border-radius:12px"><div style="font-weight:700;color:#c62828">AB-</div><div style="font-size:11px;color:#e65100">Low</div></div>
+</div>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Request blood</h4>
+<div class="form-group"><label>Patient name</label><input type="text" class="form-control" id="bbName" placeholder="Full name"/></div>
+<div class="form-group"><label>Blood group needed</label>
+<select class="form-control" id="bbGroup"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+</div>
+<div class="form-group"><label>Phone</label><input type="tel" class="form-control" id="bbPhone" placeholder="10-digit number" maxlength="10"/></div>
+<button class="btn btn-primary" style="background:linear-gradient(135deg,#ad1457,#e91e63)" onclick="requestBlood()">Submit Request</button>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Donate blood</h4>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:10px">Register as a voluntary donor. Contact our desk to schedule.</p>
+<button class="btn btn-outline" onclick="clickSound();showToast('Donor registration noted. We will contact you.');">Register as Donor</button>
+<a href="tel:8421293110" class="btn btn-primary" style="margin-top:8px;text-decoration:none" onclick="clickSound()">Call Blood Bank Desk</a>
+</div>
+</div>
+
+<div class="screen" id="scanCentres">
+<div class="section-title">CT Scan &amp; X-Ray Centres</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Diagnostic imaging centres near you</p>
+<div id="scanCentresList"></div>
+</div>
+
+<div class="screen" id="genericStores">
+<div class="section-title">Generic Medical Stores</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Affordable generic medicines</p>
+<div id="genericStoresList"></div>
+</div>
+
+<div class="screen" id="stores24">
+<div class="section-title">24 Hours Medical Stores</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Open round the clock</p>
+<div id="stores24List"></div>
+</div>
+
+<div class="screen" id="oxygen">
+<div class="section-title">Oxygen Suppliers</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:12px">Medical oxygen cylinders &amp; concentrators</p>
+<div id="oxygenList"></div>
+</div>
+
+<div class="screen" id="paymentHistory">
+<div class="section-title">Payment History</div>
+<div id="paymentList"></div>
+</div>
+
+<div class="screen" id="notifications">
+<div class="section-title">Notification Settings</div>
+
+<div class="notif-section-label">Appointment Reminder</div>
+<div class="notif-card">
+<div class="remind-label">Remind me before appointment</div>
+<div class="remind-chips" id="remindChips">
+<button type="button" class="remind-chip" data-min="15" onclick="setRemindTime(this)">15 min</button>
+<button type="button" class="remind-chip" data-min="30" onclick="setRemindTime(this)">30 min</button>
+<button type="button" class="remind-chip selected" data-min="60" onclick="setRemindTime(this)">1 hour</button>
+<button type="button" class="remind-chip" data-min="120" onclick="setRemindTime(this)">2 hours</button>
+</div>
+</div>
+
+<div class="notif-section-label">Notification Types</div>
+<div class="notif-card" id="notifTypesList"></div>
+</div>
+
+<div class="screen" id="privacy">
+<div class="section-title">Privacy Policy</div>
+<div class="card legal-card">
+<p class="legal-meta">Effective Date: August 31, 2026<br>App Name: <strong>HealthMate</strong></p>
+<p>Welcome to HealthMate. We value your trust and are committed to protecting your personal and medical information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our mobile application to book doctor appointments.</p>
+<h4>1. Information We Collect</h4>
+<p>To provide our services, we may collect:</p>
+<ul>
+<li><strong>Personal Details:</strong> Name, phone number, email address, and age.</li>
+<li><strong>Health Information:</strong> Appointment history, symptoms, or medical notes you share for booking purposes.</li>
+<li><strong>Device Data:</strong> Basic technical information like device type and IP address for app performance.</li>
+</ul>
+<h4>2. How We Use Your Information</h4>
+<p>We use your information strictly to:</p>
+<ul>
+<li>Book and manage your appointments with healthcare providers.</li>
+<li>Send you appointment confirmations, reminders, and updates.</li>
+<li>Improve app functionality and customer support.</li>
+</ul>
+<h4>3. Data Sharing &amp; Security</h4>
+<ul>
+<li><strong>With Doctors:</strong> Your booking details are shared only with the specific doctor or clinic you choose to visit.</li>
+<li><strong>Third Parties:</strong> We never sell, trade, or rent your personal or medical data to advertisers.</li>
+<li><strong>Security:</strong> We use standard encryption and security measures to keep your data safe.</li>
+</ul>
+<h4>4. Your Choices</h4>
+<p>You can update your profile information or delete your account at any time directly through the app settings.</p>
+<h4>5. Contact Us</h4>
+<p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@healthmateapp.com">support@healthmateapp.com</a>.</p>
+</div>
+</div>
+
+<div class="screen" id="terms">
+<div class="section-title">Terms &amp; Conditions</div>
+<div class="card legal-card">
+<p class="legal-meta">Effective Date: August 31, 2026<br>App Name: <strong>HealthMate</strong></p>
+<p>Welcome to HealthMate. By downloading, accessing, or using our mobile application, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
+<h4>1. Acceptance of Terms</h4>
+<p>By using HealthMate to book appointments or access services, you confirm that you are at least 18 years old (or using the app under parental/guardian supervision) and agree to these terms.</p>
+<h4>2. Nature of Service</h4>
+<ul>
+<li>HealthMate is a platform that connects patients with healthcare providers for booking online appointments.</li>
+<li>We act solely as an intermediary. We do not provide medical advice, diagnosis, or treatment; those are provided entirely by the respective doctors or clinics.</li>
+</ul>
+<h4>3. User Responsibilities</h4>
+<ul>
+<li>You agree to provide accurate, current, and complete information during registration and appointment booking.</li>
+<li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+</ul>
+<h4>4. Appointments &amp; Cancellations</h4>
+<ul>
+<li>Appointment confirmations are subject to availability by the doctor or clinic.</li>
+<li>If you need to cancel or reschedule an appointment, please do so in advance through the app according to the clinic's policy.</li>
+</ul>
+<h4>5. Limitation of Liability</h4>
+<p>HealthMate is not liable for any medical outcomes, delayed appointments, or disputes between patients and healthcare providers. Use of the app and medical services is at your own risk.</p>
+<h4>6. Changes to Terms</h4>
+<p>We reserve the right to update these terms at any time. Continued use of the app after changes constitutes your acceptance of the new terms.</p>
+<h4>7. Contact Us</h4>
+<p>For any questions regarding these Terms and Conditions, please contact us at <a href="mailto:support@healthmateapp.com">support@healthmateapp.com</a>.</p>
+</div>
+</div>
+
+<div class="screen" id="permissions">
+<div class="section-title">App Permissions</div>
+<p style="font-size:12px;color:var(--text-light);margin-bottom:14px">Allow HealthMate to use these features for a better experience. You can change them anytime in browser or device settings.</p>
+<div class="card">
+<div class="notif-row">
+<div class="notif-row-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+<div class="notif-row-text"><h4>Camera</h4><p id="permCamStatus">For online consultation &amp; document scan</p></div>
+<button type="button" class="remind-chip" onclick="requestCameraPerm()">Allow</button>
+</div>
+<div class="notif-row">
+<div class="notif-row-icon" style="background:#e8f5e9;color:#2e7d32"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+<div class="notif-row-text"><h4>Location</h4><p id="permLocStatus">For nearby clinics, ambulance &amp; directions</p></div>
+<button type="button" class="remind-chip" onclick="requestLocationPerm()">Allow</button>
+</div>
+<div class="notif-row">
+<div class="notif-row-icon" style="background:#fff3e0;color:#e65100"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+<div class="notif-row-text"><h4>Audio / Microphone</h4><p id="permMicStatus">For calls, consult &amp; medicine alarms</p></div>
+<button type="button" class="remind-chip" onclick="requestAudioPerm()">Allow</button>
+</div>
+<div class="notif-row" style="border-bottom:none">
+<div class="notif-row-icon" style="background:#f3e5f5;color:#7b1fa2"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+<div class="notif-row-text"><h4>Storage</h4><p id="permStoreStatus">Save reports, exports &amp; offline data</p></div>
+<button type="button" class="remind-chip" onclick="requestStoragePerm()">Allow</button>
+</div>
+</div>
+<button class="btn btn-primary" style="margin-top:8px" onclick="requestAllPermissions()">Allow all permissions</button>
+<p style="font-size:11px;color:var(--text-light);margin-top:12px;line-height:1.5">On Android / iOS, the system will show a permission dialog. If denied, enable them from phone Settings → Apps → HealthMate (or browser).</p>
+</div>
+
+<div class="screen" id="help">
+<div class="section-title">Help &amp; Support</div>
+<div class="card">
+<p style="font-size:13px;color:var(--text-light);margin-bottom:16px">Need help with appointments, payments, or your account? Contact us anytime.</p>
+<a href="mailto:saymayameen3110@gmail.com" class="settings-item" style="text-decoration:none;color:inherit" onclick="clickSound()">
+<div class="settings-left">
+<div class="settings-icon" style="background:#e3f2fd;color:#1565c0"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+<div><h4>Email</h4><p>saymayameen3110@gmail.com</p></div>
+</div>
+<span style="color:var(--primary);font-size:12px;font-weight:600">Send ›</span>
+</a>
+<a href="tel:8421293110" class="settings-item" style="text-decoration:none;color:inherit;border-bottom:none" onclick="clickSound()">
+<div class="settings-left">
+<div class="settings-icon" style="background:#e8f5e9;color:#2e7d32"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+<div><h4>Phone</h4><p>8421293110</p></div>
+</div>
+<span style="color:var(--primary);font-size:12px;font-weight:600">Call ›</span>
+</a>
+</div>
+<div class="card" style="margin-top:12px">
+<p style="font-size:12px;color:var(--text-light);line-height:1.5"><strong style="color:var(--text)">HealthMate Support</strong><br>We usually respond within 24 hours on working days.</p>
+</div>
+</div>
+
+<div class="screen" id="about">
+<div class="section-title">About Us</div>
+<div class="card" style="text-align:center;padding:24px 16px">
+<img src="logo.jpg" alt="HealthMate" style="width:88px;height:88px;object-fit:contain;margin:0 auto 12px;border-radius:16px"/>
+<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">HealthMate</h3>
+<p style="font-size:13px;color:var(--primary);font-weight:600;margin-bottom:8px">Hospital Appointment</p>
+<p style="font-size:12px;color:var(--text-light)">Version 1.0.0</p>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Our Mission</h4>
+<p style="font-size:13px;line-height:1.6;color:var(--text)">HealthMate makes healthcare simple. Book doctor appointments, manage schedules, pay fees, and access lab tests — all in one clean mobile experience. Care made simple.</p>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">What We Offer</h4>
+<ul style="margin:0 0 0 18px;padding:0;font-size:13px;line-height:1.7;color:var(--text)">
+<li>Book in-clinic &amp; online consultations</li>
+<li>Multi-language doctor consult options</li>
+<li>Lab testing &amp; payment history</li>
+<li>Medicine schedule &amp; reminders</li>
+<li>Patient reviews &amp; doctor profiles</li>
+</ul>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Developed By</h4>
+<p style="font-size:13px;line-height:1.6">
+<strong style="color:var(--primary)">Sayma Yameen &amp; Lubna Fatema</strong><br>
+<span style="color:var(--text-light)">B.Sc (CS) III YMN</span>
+</p>
+</div>
+<div class="card">
+<h4 style="font-size:14px;font-weight:700;margin-bottom:8px">Contact</h4>
+<p style="font-size:13px;line-height:1.7">
+Email: <a href="mailto:saymayameen3110@gmail.com" style="color:var(--primary);font-weight:600;text-decoration:none">saymayameen3110@gmail.com</a><br>
+Phone: <a href="tel:8421293110" style="color:var(--primary);font-weight:600;text-decoration:none">8421293110</a>
+</p>
+</div>
+<p style="text-align:center;font-size:11px;color:#8a9aa8;margin-top:8px">© 2026 HealthMate. All rights reserved.</p>
+</div>
+
+<div class="bottom-nav">
+<button class="nav-item active" data-screen="home" onclick="clickSound();showScreen('home')"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span data-i18n="home">Home</span></button>
+<button class="nav-item" data-screen="doctors" onclick="clickSound();showScreen('doctors')"><span class="icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span data-i18n="doctors">Doctors</span></button>
+<button class="nav-item" data-screen="book" onclick="clickSound();showScreen('book')"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span data-i18n="book">Book</span></button>
+<button class="nav-item" data-screen="appointments" onclick="clickSound();showScreen('appointments')"><span class="icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span data-i18n="appts">Appts</span></button>
+<button class="nav-item" data-screen="schedule" onclick="clickSound();showScreen('schedule')"><span class="icon"><svg viewBox="0 0 24 24"><path d="M10.5 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4"/><path d="M8 2v4M16 2v4M2 10h20"/><path d="M17 14v6M14 17h6"/></svg></span><span data-i18n="schedule">Schedule</span></button>
+</div>
+</div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+<div class="confirm-card">
+<div class="confirm-icon">✓</div>
+<h2 data-i18n="appt_confirmed">Appointment Confirmed!</h2>
+<p data-i18n="appt_success">Your booking has been successfully scheduled.</p>
+<div class="confirm-details">
+<div class="confirm-row"><span data-i18n="patient">Patient</span><span id="cPatient">—</span></div>
+<div class="confirm-row"><span data-i18n="doctor">Doctor</span><span id="cDoctor">—</span></div>
+<div class="confirm-row"><span data-i18n="department">Department</span><span id="cDept">—</span></div>
+<div class="confirm-row"><span data-i18n="datetime">Date & Time</span><span id="cDateTime">—</span></div>
+</div>
+<button class="btn btn-primary" onclick="closeConfirm()" data-i18n="done">Done</button>
+</div>
+</div>
+
+<div class="overlay" id="langOverlay">
+<div class="confirm-card">
+<h2 style="text-align:center;margin-bottom:16px" data-i18n="choose_lang">Choose Language</h2>
+<button class="btn btn-outline" style="margin-bottom:10px" onclick="setAppLanguage('en')">English</button>
+<button class="btn btn-outline" style="margin-bottom:10px" onclick="setAppLanguage('hi')">हिन्दी (Hindi)</button>
+<button class="btn btn-outline" style="margin-bottom:10px" onclick="setAppLanguage('mr')">मराठी (Marathi)</button>
+<button class="btn btn-primary" onclick="document.getElementById('langOverlay').classList.remove('show')" data-i18n="close">Close</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const translations={
+en:{welcome:"Welcome to HealthMate",login_sub:"Sign in to book appointments & manage your health",google_signin:"Continue with Google",continue_guest:"Continue as Guest",tagline:"Care Made Simple",welcome_user:"Welcome to HealthMate",hero_sub:"Book appointments with top specialists in just a few taps.",book_now:"Book Appointment",quick_actions:"Quick Actions",doctors:"Doctors",departments:"Departments",online:"Online",schedule:"Schedule",suggestions:"Doctor Suggestions",top_doctors:"Top Doctors",see_all:"See all",our_specialists:"Our Specialists",book_appointment:"Book Appointment",select_dept:"Select Department",select_doctor:"Select Doctor",preferred_date:"Preferred Date",time_slots:"Time Slots",continue:"Continue →",online_consult:"Online Doctor Consultation",consult_lang:"Consultation Language",book_online:"Book Online Consultation",patient_details:"Patient Details",full_name:"Full Name",age:"Age",gender:"Gender",phone:"Phone Number (10 digits)",reason:"Reason (optional)",confirm_appt:"Confirm Appointment",my_appointments:"My Appointments",export:"Export",tablet_schedule:"Patient Tablet Schedule",add:"+ Add",schedule_note:"You can edit or remove medicines anytime.",settings:"Settings",app_language:"App Language",subscription:"Subscription",sub_desc:"Premium plans",patient_reviews:"Patient Reviews",reviews_desc:"Rate your doctors",export_data:"Export Patient Data",logout:"Logout",logout_desc:"Sign out",premium:"HealthMate Premium",sub1:"Unlimited online consultations",sub2:"Priority appointment booking",sub3:"Medicine reminders",sub4:"Health reports storage",sub5:"24/7 chat support",subscribe:"Subscribe Now",free_plan:"Free Plan",free_desc:"Basic appointment booking and limited online consults.",your_rating:"Your Rating",your_review:"Your Review",submit_review:"Submit Review",recent_reviews:"Recent Reviews",appt_confirmed:"Appointment Confirmed!",appt_success:"Your booking has been successfully scheduled.",patient:"Patient",doctor:"Doctor",department:"Department",datetime:"Date & Time",done:"Done",choose_lang:"Choose Language",close:"Close",home:"Home",book:"Book",appts:"Appts",edit_profile:"Edit Profile",blood:"Blood Group"},
+hi:{welcome:"हेल्थमेट में आपका स्वागत है",login_sub:"अपॉइंटमेंट बुक करने के लिए साइन इन करें",google_signin:"Google के साथ जारी रखें",continue_guest:"अतिथि के रूप में जारी रखें",tagline:"देखभाल आसान बनाई",welcome_user:"हेल्थमेट में आपका स्वागत है",hero_sub:"कुछ ही टैप में शीर्ष विशेषज्ञों के साथ अपॉइंटमेंट बुक करें।",book_now:"अपॉइंटमेंट बुक करें",quick_actions:"त्वरित क्रियाएँ",doctors:"डॉक्टर",departments:"विभाग",online:"ऑनलाइन",schedule:"शेड्यूल",suggestions:"डॉक्टर सुझाव",top_doctors:"शीर्ष डॉक्टर",see_all:"सभी देखें",our_specialists:"हमारे विशेषज्ञ",book_appointment:"अपॉइंटमेंट बुक करें",select_dept:"विभाग चुनें",select_doctor:"डॉक्टर चुनें",preferred_date:"पसंदीदा तारीख",time_slots:"समय स्लॉट",continue:"जारी रखें →",online_consult:"ऑनलाइन डॉक्टर परामर्श",consult_lang:"परामर्श भाषा",book_online:"ऑनलाइन परामर्श बुक करें",patient_details:"मरीज़ का विवरण",full_name:"पूरा नाम",age:"उम्र",gender:"लिंग",phone:"फ़ोन नंबर (10 अंक)",reason:"कारण (वैकल्पिक)",confirm_appt:"अपॉइंटमेंट की पुष्टि करें",my_appointments:"मेरी अपॉइंटमेंट्स",export:"निर्यात",tablet_schedule:"दवाई का शेड्यूल",add:"+ जोड़ें",schedule_note:"आप कभी भी दवाइयाँ संपादित या हटा सकते हैं।",settings:"सेटिंग्स",app_language:"ऐप भाषा",subscription:"सदस्यता",sub_desc:"प्रीमियम प्लान",patient_reviews:"मरीज़ समीक्षाएँ",reviews_desc:"डॉक्टरों को रेट करें",export_data:"मरीज़ डेटा निर्यात",logout:"लॉग आउट",logout_desc:"साइन आउट",premium:"हेल्थमेट प्रीमियम",sub1:"असीमित ऑनलाइन परामर्श",sub2:"प्राथमिकता बुकिंग",sub3:"दवा रिमाइंडर",sub4:"रिपोर्ट स्टोरेज",sub5:"24/7 चैट सपोर्ट",subscribe:"अभी सदस्यता लें",free_plan:"मुफ़्त प्लान",free_desc:"बुनियादी बुकिंग और सीमित परामर्श।",your_rating:"आपकी रेटिंग",your_review:"आपकी समीक्षा",submit_review:"समीक्षा जमा करें",recent_reviews:"हाल की समीक्षाएँ",appt_confirmed:"अपॉइंटमेंट की पुष्टि हो गई!",appt_success:"बुकिंग सफलतापूर्वक शेड्यूल हो गई।",patient:"मरीज़",doctor:"डॉक्टर",department:"विभाग",datetime:"तारीख और समय",done:"हो गया",choose_lang:"भाषा चुनें",close:"बंद करें",home:"होम",book:"बुक",appts:"अपॉइंटमेंट",edit_profile:"प्रोफ़ाइल संपादित करें",blood:"ब्लड ग्रुप"},
+mr:{welcome:"हेल्थमेट मध्ये आपले स्वागत आहे",login_sub:"अपॉइंटमेंट बुक करण्यासाठी साइन इन करा",google_signin:"Google सह सुरू ठेवा",continue_guest:"अतिथी म्हणून सुरू ठेवा",tagline:"काळजी सोपी केली",welcome_user:"हेल्थमेट मध्ये आपले स्वागत आहे",hero_sub:"काही टॅपमध्ये तज्ञांसोबत अपॉइंटमेंट बुक करा.",book_now:"अपॉइंटमेंट बुक करा",quick_actions:"त्वरित क्रिया",doctors:"डॉक्टर्स",departments:"विभाग",online:"ऑनलाइन",schedule:"शेड्यूल",suggestions:"डॉक्टर सूचना",top_doctors:"शीर्ष डॉक्टर्स",see_all:"सर्व पहा",our_specialists:"आमचे तज्ञ",book_appointment:"अपॉइंटमेंट बुक करा",select_dept:"विभाग निवडा",select_doctor:"डॉक्टर निवडा",preferred_date:"पसंतीची तारीख",time_slots:"वेळ स्लॉट",continue:"पुढे जा →",online_consult:"ऑनलाइन डॉक्टर सल्लामसलत",consult_lang:"सल्लामसलत भाषा",book_online:"ऑनलाइन सल्लामसलत बुक करा",patient_details:"रुग्ण तपशील",full_name:"पूर्ण नाव",age:"वय",gender:"लिंग",phone:"फोन नंबर (10 अंक)",reason:"कारण (पर्यायी)",confirm_appt:"अपॉइंटमेंटची पुष्टी करा",my_appointments:"माझ्या अपॉइंटमेंट्स",export:"एक्सपोर्ट",tablet_schedule:"गोळ्यांचे वेळापत्रक",add:"+ जोडा",schedule_note:"तुम्ही कधीही औषधे संपादित किंवा काढू शकता.",settings:"सेटिंग्ज",app_language:"अॅप भाषा",subscription:"सदस्यता",sub_desc:"प्रीमियम योजना",patient_reviews:"रुग्ण पुनरावलोकने",reviews_desc:"डॉक्टरांना रेट करा",export_data:"रुग्ण डेटा निर्यात",logout:"लॉगआउट",logout_desc:"साइन आउट",premium:"हेल्थमेट प्रीमियम",sub1:"अमर्याद ऑनलाइन सल्लामसलत",sub2:"प्राधान्य बुकिंग",sub3:"औषध रिमाइंडर",sub4:"अहवाल साठवण",sub5:"24/7 चॅट सपोर्ट",subscribe:"आता सदस्यता घ्या",free_plan:"मोफत योजना",free_desc:"मूलभूत बुकिंग आणि मर्यादित सल्लामसलत.",your_rating:"तुमची रेटिंग",your_review:"तुमचे पुनरावलोकन",submit_review:"पुनरावलोकन सबमिट करा",recent_reviews:"अलीकडील पुनरावलोकने",appt_confirmed:"अपॉइंटमेंटची पुष्टी झाली!",appt_success:"बुकिंग यशस्वीरित्या शेड्यूल झाली.",patient:"रुग्ण",doctor:"डॉक्टर",department:"विभाग",datetime:"तारीख आणि वेळ",done:"झाले",choose_lang:"भाषा निवडा",close:"बंद करा",home:"होम",book:"बुक",appts:"अपॉइंटमेंट",edit_profile:"प्रोफाइल संपादित करा",blood:"रक्त गट"}
+};
+let currentLang=localStorage.getItem('healthmate_lang')||'en';
+let currentUser=JSON.parse(localStorage.getItem('healthmate_user')||'null');
+let historyStack=['home'],selectedTime=null,selectedOnlineTime=null,selectedConsultLang=null,currentRating=0,pendingAppointment=null;
+const doctorSvg='<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+const doctorsData=[
+{name:"Dr. Ananya Sharma",specialty:"Cardiologist",degree:"MD, DM Cardiology",exp:"12 yrs",rating:"4.9",fee:800,patients:1240,schedules:6,available:true,clinic:"HealthMate Heart Care Center",address:"12, Medical Complex, MG Road",phone:"9876543210",schedule:"Mon, Wed, Fri, Sat",hours:"10:00 AM - 2:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Rajesh Mehta",specialty:"Orthopedic",degree:"MS Orthopedics",exp:"15 yrs",rating:"4.8",fee:700,patients:980,schedules:5,available:true,clinic:"Bone & Joint Specialty Clinic",address:"45, Ortho Lane, Civil Lines",phone:"9876543211",schedule:"Mon, Tue, Thu, Sat",hours:"9:00 AM - 1:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Priya Nair",specialty:"Pediatrician",degree:"MD Pediatrics",exp:"10 yrs",rating:"4.9",fee:600,patients:1560,schedules:7,available:true,clinic:"Little Stars Child Care",address:"8, Children's Hospital Road",phone:"9876543212",schedule:"Mon–Sat",hours:"9:00 AM - 3:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Vikram Singh",specialty:"Neurologist",degree:"MD, DM Neurology",exp:"14 yrs",rating:"4.7",fee:900,patients:720,schedules:4,available:true,clinic:"Neuro Care Institute",address:"22, Brain Care Avenue",phone:"9876543213",schedule:"Tue, Thu, Sat",hours:"11:00 AM - 4:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Sneha Patel",specialty:"Dermatologist",degree:"MD Dermatology",exp:"9 yrs",rating:"4.8",fee:650,patients:1100,schedules:6,available:true,clinic:"Skin Glow Dermatology",address:"3, Beauty Plaza, Ring Road",phone:"9876543214",schedule:"Mon, Wed, Fri, Sun",hours:"10:00 AM - 6:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. A. K. Dalal",specialty:"Pediatrician",degree:"MBBS, DCH",exp:"18 yrs",rating:"4.5",fee:350,patients:800,schedules:5,available:false,clinic:"Child Care Clinic",address:"Hospital Road",phone:"9876500001",schedule:"Mon–Fri",hours:"10:00 AM - 1:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. A. K. Ghosh",specialty:"ENT",degree:"MBBS, MS (ENT)",exp:"16 yrs",rating:"4.6",fee:500,patients:640,schedules:4,available:false,clinic:"ENT Care Center",address:"City Center",phone:"9876500002",schedule:"Tue, Thu, Sat",hours:"11:00 AM - 3:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. A. T. M. Saheen",specialty:"Surgeon",degree:"MBBS, MS (General Surgery)",exp:"14 yrs",rating:"4.7",fee:400,patients:520,schedules:5,available:true,clinic:"General Surgery Unit",address:"Medical College Road",phone:"9876500003",schedule:"Mon–Sat",hours:"9:00 AM - 2:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Aamir Siddique",specialty:"General Physician",degree:"MBBS",exp:"8 yrs",rating:"4.4",fee:300,patients:2,schedules:7,available:true,clinic:"New Suswasthya Medicine",address:"New Hospital road, Rampurhat",phone:"8972595907",schedule:"Mon–Sun",hours:"9:00 AM - 3:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Fatima Khan",specialty:"General Physician",degree:"MBBS, MD",exp:"11 yrs",rating:"4.8",fee:350,patients:890,schedules:6,available:true,clinic:"Family Care Clinic",address:"Main Market",phone:"9876500004",schedule:"Mon–Sat",hours:"9:00 AM - 5:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Arjun Reddy",specialty:"Cardiologist",degree:"MBBS, MD Cardiology",exp:"13 yrs",rating:"4.6",fee:750,patients:430,schedules:4,available:true,clinic:"Heartline Clinic",address:"Ring Road",phone:"9876500005",schedule:"Mon, Wed, Fri",hours:"10:00 AM - 1:00 PM",payment:"Pay at Clinic"},
+{name:"Dr. Meera Joshi",specialty:"Dermatologist",degree:"MBBS, MD Skin",exp:"7 yrs",rating:"4.9",fee:550,patients:670,schedules:5,available:false,clinic:"Derma Care",address:"Lake View",phone:"9876500006",schedule:"Tue, Thu, Sat",hours:"12:00 PM - 6:00 PM",payment:"Pay at Clinic"}
+];
+let currentDoctorProfile=null;
+let doctorFilter='all';
+let doctorSort='relevance';
+const suggestionsData=[{title:"Stay Hydrated",text:"Drink at least 8 glasses of water daily for better heart health."},{title:"Walk Daily",text:"30 minutes of brisk walking improves circulation and mood."},{title:"Sleep Well",text:"Aim for 7–8 hours of quality sleep every night."},{title:"Limit Sugar",text:"Reduce refined sugar to keep blood sugar levels stable."}];
+const labTestsData=[
+{name:"Complete Blood Count (CBC)",price:350,time:"Same day"},
+{name:"Blood Sugar (FBS/PPBS)",price:200,time:"Same day"},
+{name:"Lipid Profile",price:500,time:"Same day"},
+{name:"Thyroid Profile (T3,T4,TSH)",price:600,time:"1 day"},
+{name:"Liver Function Test (LFT)",price:550,time:"Same day"},
+{name:"Kidney Function Test (KFT)",price:500,time:"Same day"},
+{name:"Vitamin D",price:900,time:"2 days"},
+{name:"HbA1c (Diabetes)",price:450,time:"Same day"},
+{name:"Urine Routine",price:150,time:"Same day"},
+{name:"ECG",price:300,time:"Immediate"},
+{name:"X-Ray Chest",price:400,time:"Same day"},
+{name:"Ultrasound Abdomen",price:800,time:"1 day"}
+];
+
+// ===== Sounds (Web Audio API) =====
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,dur,type,vol){
+  try{
+    const ctx=getAudio();
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.type=type||'sine';
+    o.frequency.value=freq;
+    g.gain.value=vol||0.08;
+    o.connect(g);g.connect(ctx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(dur||0.08));
+    o.stop(ctx.currentTime+(dur||0.08)+0.02);
+  }catch(e){}
+}
+function clickSound(){playTone(600,0.05,'sine',0.06);}
+function loginSound(){playTone(523,0.1,'sine',0.1);setTimeout(()=>playTone(659,0.12,'sine',0.1),100);setTimeout(()=>playTone(784,0.15,'sine',0.1),220);}
+function logoutSound(){playTone(784,0.1,'sine',0.08);setTimeout(()=>playTone(659,0.1,'sine',0.08),90);setTimeout(()=>playTone(523,0.15,'sine',0.08),180);}
+function paySound(){playTone(880,0.08,'triangle',0.1);setTimeout(()=>playTone(1100,0.12,'triangle',0.1),90);}
+
+function getPayments(){try{return JSON.parse(localStorage.getItem('healthmate_payments')||'[]');}catch{return[];}}
+function savePayment(p){const list=getPayments();list.unshift(p);localStorage.setItem('healthmate_payments',JSON.stringify(list));}
+
+function applyLanguage(){const t=translations[currentLang]||translations.en;document.querySelectorAll('[data-i18n]').forEach(el=>{if(t[el.getAttribute('data-i18n')])el.textContent=t[el.getAttribute('data-i18n')];});const lbl=document.getElementById('currentLangLabel');if(lbl)lbl.textContent=currentLang==='hi'?'हिन्दी':currentLang==='mr'?'मराठी':'English';}
+function setAppLanguage(lang){currentLang=lang;localStorage.setItem('healthmate_lang',lang);applyLanguage();updateGreeting();document.getElementById('langOverlay').classList.remove('show');showToast(lang==='hi'?'भाषा: हिन्दी':lang==='mr'?'भाषा: मराठी':'Language: English');}
+function showLanguagePicker(){document.getElementById('langOverlay').classList.add('show');}
+
+let loginRole='patient';
+function selectLoginRole(el){
+  clickSound();
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  loginRole=el.dataset.role||'patient';
+  const hints={patient:'Personal portal — book doctors, view history & prescriptions',doctor:'Medical workspace — patients, schedule, notes & appointments',admin:'Full control — doctors, staff, records, billing & reports'};
+  const h=document.getElementById('loginRoleHint');
+  if(h)h.textContent=hints[loginRole]||hints.patient;
+}
+function loginWithRole(){
+  const email=(document.getElementById('loginEmail')?.value||'').trim();
+  const pass=(document.getElementById('loginPassword')?.value||'').trim();
+  if(loginRole==='admin'){
+    if((email==='admin'||email==='admin@healthmate.app')&&pass==='admin123'){
+      loginSound();
+      currentUser={name:'System Admin',email:'admin@healthmate.app',role:'admin',provider:'admin'};
+      localStorage.setItem('healthmate_user',JSON.stringify(currentUser));
+      enterAdminApp();
+      showToast('Admin logged in');
+      return;
+    }
+    showToast('Invalid admin credentials');
+    return;
+  }
+  if(loginRole==='doctor'){
+    if((email==='doctor'||email.toLowerCase().includes('doctor')||email.includes('@'))&&(pass==='doc123'||pass.length>=4)){
+      loginSound();
+      const doc=doctorsData[0];
+      currentUser={name:doc?doc.name:'Dr. User',email:email||'doctor@healthmate.app',role:'doctor',provider:'doctor',specialty:doc?doc.specialty:'General'};
+      localStorage.setItem('healthmate_user',JSON.stringify(currentUser));
+      enterDoctorApp();
+      showToast('Doctor workspace opened');
+      return;
+    }
+    showToast('Invalid doctor credentials (try doctor / doc123)');
+    return;
+  }
+  // patient
+  if(!email){showToast('Enter email or continue as guest');return;}
+  loginSound();
+  currentUser={name:email.split('@')[0],email,role:'patient',provider:'email'};
+  localStorage.setItem('healthmate_user',JSON.stringify(currentUser));
+  enterApp();
+  showToast('Patient signed in');
+}
+function loginWithGoogle(){loginSound();currentUser={name:"Sayma Yameen Syed Kaleemuddin",email:"saymayameen3110@gmail.com",phone:"",age:"",gender:"Female",blood:"",role:"patient",provider:"google"};localStorage.setItem('healthmate_user',JSON.stringify(currentUser));enterApp();showToast("Signed in with Google");}
+function loginAsGuest(){loginSound();currentUser={name:"Guest User",email:"guest@healthmate.app",phone:"",age:"",gender:"",blood:"",role:"patient",provider:"guest"};localStorage.setItem('healthmate_user',JSON.stringify(currentUser));enterApp();showToast("Continuing as Guest");}
+function hideAllApps(){
+  document.getElementById('loginScreen')?.classList.add('hidden');
+  document.getElementById('mainApp')?.classList.add('hidden');
+  document.getElementById('adminApp')?.classList.add('hidden');
+  document.getElementById('doctorApp')?.classList.add('hidden');
+}
+function enterAdminApp(){
+  hideAllApps();
+  document.getElementById('adminApp').classList.remove('hidden');
+  renderAdminPanel();
+}
+function enterDoctorApp(){
+  hideAllApps();
+  document.getElementById('doctorApp').classList.remove('hidden');
+  const n=document.getElementById('docWorkspaceName');
+  if(n)n.textContent=currentUser?.name||'Care panel';
+  renderDoctorPanel();
+}
+function roleLogout(){
+  if(!confirm('Logout?'))return;
+  logoutSound();
+  localStorage.removeItem('healthmate_user');
+  currentUser=null;
+  hideAllApps();
+  document.getElementById('loginScreen').classList.remove('hidden');
+  showToast('Logged out');
+}
+function renderAdminPanel(){
+  const appts=JSON.parse(localStorage.getItem('healthmate_appointments')||'[]');
+  const pays=JSON.parse(localStorage.getItem('healthmate_payments')||'[]');
+  const reviews=JSON.parse(localStorage.getItem('healthmate_reviews')||'[]');
+  const el=id=>document.getElementById(id);
+  if(el('admDocCount'))el('admDocCount').textContent=doctorsData.length;
+  if(el('admApptCount'))el('admApptCount').textContent=appts.length;
+  if(el('admPayCount'))el('admPayCount').textContent=pays.length;
+  if(el('adminDoctorsList'))el('adminDoctorsList').innerHTML=doctorsData.map((d,i)=>`<div class="settings-item" style="cursor:default"><div><h4>${d.name}</h4><p>${d.specialty} · ₹${d.fee}</p></div><div style="display:flex;gap:6px"><button class="remind-chip" onclick="adminEditDoctor(${i})">Edit</button><button class="remind-chip" style="color:#c62828" onclick="adminRemoveDoctor(${i})">Remove</button></div></div>`).join('')||'<p style="color:var(--text-light)">No doctors</p>';
+  if(el('adminApptsList'))el('adminApptsList').innerHTML=appts.length?appts.slice(0,20).map(a=>`<div class="card"><strong>${a.patient||a.name||'Patient'}</strong><p style="font-size:12px;color:var(--text-light)">${a.doctor||''} · ${a.date||''} ${a.time||''}</p><p style="font-size:12px">Status: ${a.status||'Confirmed'}</p></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No appointments yet</p>';
+  if(el('adminBillingList'))el('adminBillingList').innerHTML=pays.length?pays.slice(0,15).map(p=>`<div class="card"><strong>₹${p.amount||0}</strong> — ${p.for||p.type||'Payment'}<p style="font-size:11px;color:var(--text-light)">${p.date||''} · ${p.status||'Paid'}</p></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No billing data</p>';
+  if(el('adminFeedbackList'))el('adminFeedbackList').innerHTML=reviews.length?reviews.slice(0,10).map(r=>`<div class="card"><strong>${r.doctor||'Doctor'}</strong> ★${r.rating||'-'}<p style="font-size:12px">${r.text||r.review||''}</p></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No feedback yet</p>';
+}
+function adminAddDoctor(){
+  const name=prompt('Doctor name (e.g. Dr. New Name)');
+  if(!name)return;
+  const specialty=prompt('Specialty','General Physician')||'General Physician';
+  const fee=parseInt(prompt('Fee','400')||'400',10);
+  doctorsData.push({name,specialty,degree:'MBBS',exp:'5 yrs',rating:'4.5',fee,patients:0,schedules:5,available:true,clinic:'HealthMate Clinic',address:'Main Center',phone:'9000000000',schedule:'Mon–Sat',hours:'10:00 AM - 2:00 PM',payment:'Pay at Clinic'});
+  renderAdminPanel();
+  showToast('Doctor added');
+}
+function adminEditDoctor(i){
+  const d=doctorsData[i];if(!d)return;
+  const name=prompt('Name',d.name);if(name===null)return;
+  const specialty=prompt('Specialty',d.specialty);if(specialty===null)return;
+  const fee=prompt('Fee',String(d.fee));if(fee===null)return;
+  d.name=name||d.name;d.specialty=specialty||d.specialty;d.fee=parseInt(fee,10)||d.fee;
+  renderAdminPanel();showToast('Doctor updated');
+}
+function adminRemoveDoctor(i){
+  if(!confirm('Remove this doctor?'))return;
+  doctorsData.splice(i,1);
+  renderAdminPanel();showToast('Doctor removed');
+}
+function renderDoctorPanel(){
+  const appts=JSON.parse(localStorage.getItem('healthmate_appointments')||'[]');
+  const mine=appts.filter(a=>!currentUser?.name||(a.doctor||'').includes((currentUser.name||'').replace(/^Dr\.\s*/,''))||true);
+  const el=id=>document.getElementById(id);
+  if(el('docScheduleList'))el('docScheduleList').innerHTML=mine.length?mine.slice(0,10).map(a=>`<div class="card"><strong>${a.patient||a.name||'Patient'}</strong><p style="font-size:12px">${a.date||''} ${a.time||''} · ${a.dept||a.department||''}</p>
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <button class="remind-chip" onclick="docUpdateAppt('${a.id}','Completed')">Complete</button>
+      <button class="remind-chip" onclick="docUpdateAppt('${a.id}','Accepted')">Accept</button>
+      <button class="remind-chip" style="color:#c62828" onclick="docUpdateAppt('${a.id}','Cancelled')">Cancel</button>
+    </div></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No appointments assigned</p>';
+  if(el('docPatientsList')){
+    const names=[...new Set(mine.map(a=>a.patient||a.name).filter(Boolean))];
+    el('docPatientsList').innerHTML=names.length?names.map(n=>`<div class="card"><strong>${n}</strong><p style="font-size:12px;color:var(--text-light)">Assigned patient</p></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No patients yet</p>';
+  }
+  renderDoctorNotes();
+}
+function docUpdateAppt(id,status){
+  clickSound();
+  const appts=JSON.parse(localStorage.getItem('healthmate_appointments')||'[]');
+  const a=appts.find(x=>x.id===id);
+  if(a){a.status=status;localStorage.setItem('healthmate_appointments',JSON.stringify(appts));}
+  renderDoctorPanel();
+  showToast('Appointment '+status);
+}
+function saveDoctorNote(){
+  clickSound();
+  const patient=document.getElementById('docNotePatient')?.value?.trim();
+  const text=document.getElementById('docNoteText')?.value?.trim();
+  const rx=document.getElementById('docRx')?.value?.trim();
+  if(!patient||!text){showToast('Enter patient and notes');return;}
+  const notes=JSON.parse(localStorage.getItem('healthmate_doc_notes')||'[]');
+  notes.unshift({id:'n'+Date.now(),patient,text,rx,doctor:currentUser?.name,date:new Date().toLocaleString()});
+  localStorage.setItem('healthmate_doc_notes',JSON.stringify(notes));
+  document.getElementById('docNotePatient').value='';
+  document.getElementById('docNoteText').value='';
+  document.getElementById('docRx').value='';
+  renderDoctorNotes();
+  showToast('Notes saved');
+}
+function renderDoctorNotes(){
+  const notes=JSON.parse(localStorage.getItem('healthmate_doc_notes')||'[]');
+  const el=document.getElementById('docNotesList');
+  if(!el)return;
+  el.innerHTML=notes.length?notes.slice(0,15).map(n=>`<div class="card"><strong>${n.patient}</strong><p style="font-size:12px;margin-top:4px">${n.text}</p>${n.rx?`<p style="font-size:12px;color:var(--primary)">Rx: ${n.rx}</p>`:''}<p style="font-size:11px;color:var(--text-light)">${n.date||''}</p></div>`).join(''):'<p style="padding:8px;color:var(--text-light)">No notes yet</p>';
+}
+function getTimePeriod(){
+  const h=new Date().getHours();
+  if(h>=5&&h<12)return 'morning';
+  if(h>=12&&h<17)return 'afternoon';
+  return 'evening';
+}
+function getTimeGreeting(){
+  const period=getTimePeriod();
+  const map={
+    morning:{en:"Good morning",hi:"सुप्रभात",mr:"शुभ सकाळ"},
+    afternoon:{en:"Good afternoon",hi:"नमस्कार",mr:"शुभ दुपार"},
+    evening:{en:"Good evening",hi:"शुभ संध्या",mr:"शुभ संध्याकाळ"}
+  };
+  return map[period];
+}
+function getPeriodIcon(period){
+  if(period==='morning')return {cls:'anim-sun',svg:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'};
+  if(period==='afternoon')return {cls:'anim-cloud',svg:'<svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>'};
+  return {cls:'anim-sun',svg:'<svg viewBox="0 0 24 24"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="8 6 12 2 16 6"/></svg>'};
+}
+function updateGreeting(){
+  const period=getTimePeriod();
+  const g=getTimeGreeting();
+  const lang=localStorage.getItem('healthmate_lang')||'en';
+  const hero=document.querySelector('.hero');
+  if(hero){
+    hero.classList.remove('period-morning','period-afternoon','period-evening','period-night');
+    hero.classList.add('period-'+period);
+  }
+  const el=document.getElementById('timeGreeting');
+  if(el){
+    const icon=getPeriodIcon(period);
+    el.innerHTML='<span class="hero-icon '+icon.cls+'">'+icon.svg+'</span><span>'+(g[lang]||g.en)+'</span>';
+    // retrigger fade animation
+    el.style.animation='none';
+    el.offsetHeight;
+    el.style.animation='fadeSlideIn .6s ease';
+  }
+  const name=currentUser?.name?currentUser.name.split(' ')[0]:'';
+  const home=document.getElementById('homeGreeting');
+  if(home&&name){
+    const welcome={en:"Welcome, "+name,hi:"स्वागत है, "+name,mr:"स्वागत आहे, "+name};
+    home.textContent=welcome[lang]||welcome.en;
+  }
+}
+const notifTypes=[
+{id:'confirmed',title:'Appointment Confirmed',desc:'When your booking is confirmed',icon:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'},
+{id:'cancelled',title:'Appointment Cancelled',desc:'When an appointment is cancelled',icon:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'},
+{id:'reminders',title:'Appointment Reminders',desc:'Reminder before your appointment',icon:'<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'},
+{id:'doctorArrived',title:'Doctor Arrived',desc:'When your doctor checks in at the clinic',icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'},
+{id:'doctorLeft',title:'Doctor Left',desc:'When your doctor leaves the clinic',icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'},
+{id:'scheduleChanges',title:'Schedule Changes',desc:'When session time is shifted',icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'},
+{id:'transferred',title:'Appointment Transferred',desc:'When your appointment is moved to another slot',icon:'<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'},
+{id:'slotExpiring',title:'Slot Expiring',desc:'When your booking slot is about to expire',icon:'<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41a2 2 0 0 0-.59 1.42V22"/><path d="M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41a2 2 0 0 0 .59-1.42V2"/>'},
+{id:'rating',title:'Rating Reminders',desc:'Rate your appointment experience',icon:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'},
+{id:'prescription',title:'Prescription Available',desc:'When your prescription is uploaded',icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>'},
+{id:'paySuccess',title:'Payment Successful',desc:'When your payment is completed',icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>'},
+{id:'payFailed',title:'Payment Failed',desc:'When a payment could not be completed',icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>'},
+{id:'refundInit',title:'Refund Initiated',desc:'When your refund request is started',icon:'<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>'},
+{id:'refundDone',title:'Refund Completed',desc:'When your refund has been completed',icon:'<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>'},
+{id:'refundFail',title:'Refund Failed',desc:'When a refund could not be completed',icon:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
+];
+function getNotifSettings(){
+  try{return JSON.parse(localStorage.getItem('healthmate_notif')||'null')||{remindMin:60,types:{}};}
+  catch{return{remindMin:60,types:{}};}
+}
+function saveNotifSettings(s){localStorage.setItem('healthmate_notif',JSON.stringify(s));}
+function setRemindTime(el){
+  clickSound();
+  document.querySelectorAll('.remind-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  const s=getNotifSettings();
+  s.remindMin=parseInt(el.dataset.min,10);
+  saveNotifSettings(s);
+  showToast('Reminder set: '+el.textContent);
+}
+function toggleNotif(id,checked){
+  clickSound();
+  const s=getNotifSettings();
+  if(!s.types)s.types={};
+  s.types[id]=checked;
+  saveNotifSettings(s);
+}
+function renderNotifications(){
+  const s=getNotifSettings();
+  document.querySelectorAll('.remind-chip').forEach(c=>{
+    c.classList.toggle('selected',parseInt(c.dataset.min,10)===(s.remindMin||60));
+  });
+  const list=document.getElementById('notifTypesList');
+  if(!list)return;
+  list.innerHTML=notifTypes.map(n=>{
+    const on=s.types[n.id]!==false;
+    return `<div class="notif-row">
+      <div class="notif-row-icon"><svg viewBox="0 0 24 24">${n.icon}</svg></div>
+      <div class="notif-row-text"><h4>${n.title}</h4><p>${n.desc}</p></div>
+      <label class="toggle"><input type="checkbox" ${on?'checked':''} onchange="toggleNotif('${n.id}',this.checked)"/><span class="toggle-slider"></span></label>
+    </div>`;
+  }).join('');
+}
+function getClinicsList(){
+  const map={};
+  doctorsData.forEach(d=>{
+    const key=d.clinic||'HealthMate Clinic';
+    if(!map[key])map[key]={name:key,address:d.address||'',phone:d.phone||'',doctors:[],specialties:new Set()};
+    map[key].doctors.push(d);
+    if(d.specialty)map[key].specialties.add(d.specialty);
+    if(!map[key].phone&&d.phone)map[key].phone=d.phone;
+    if(!map[key].address&&d.address)map[key].address=d.address;
+  });
+  return Object.values(map).map(c=>({...c,specialties:[...c.specialties]}));
+}
+function renderClinics(){
+  const q=(document.getElementById('clinicSearch')?.value||'').toLowerCase().trim();
+  let list=getClinicsList();
+  if(q)list=list.filter(c=>[c.name,c.address,c.phone,(c.specialties||[]).join(' ')].join(' ').toLowerCase().includes(q));
+  const el=document.getElementById('clinicsList');
+  if(!el)return;
+  el.innerHTML=list.length?list.map(c=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <h3 style="font-size:15px;font-weight:700">${c.name}</h3>
+          <p style="font-size:12px;color:var(--text-light);margin-top:4px">📍 ${c.address||'Address on request'}</p>
+          <p style="font-size:12px;margin-top:2px">📞 ${c.phone||'—'}</p>
+          <p style="font-size:11px;color:var(--primary);margin-top:6px;font-weight:600">${c.doctors.length} doctor(s) · ${(c.specialties||[]).slice(0,3).join(', ')}</p>
+        </div>
+        <span class="dp-active">Active</span>
+      </div>
+      <div class="dp-actions" style="margin-top:12px;margin-bottom:0">
+        <button type="button" onclick="openDirections('${(c.address||'').replace(/'/g,"\\'")}')">↗ Directions</button>
+        <button type="button" onclick="callDoctor('${c.phone||''}')">📞 Call</button>
+      </div>
+      <button type="button" class="btn btn-primary" style="margin-top:10px" onclick="clickSound();showScreen('doctors')">View Doctors</button>
+    </div>`).join(''):'<p style="padding:12px;color:var(--text-light)">No clinics found.</p>';
+}
+function enterApp(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('mainApp').classList.remove('hidden');updateProfileUI();updateGreeting();renderHomeDoctors();renderDoctors();renderDepartments();renderSuggestions();renderSchedule();renderReviews();renderLabTests();renderClinics();renderPayments();renderNotifications();renderSearchHistory();applyLanguage();updateGreeting();requestNotifPermission();scheduleMedAlarms();}
+function logout(){roleLogout();}
+function updateProfileUI(){if(!currentUser)return;document.getElementById('profileName').textContent=currentUser.name;document.getElementById('profileEmail').textContent=currentUser.email;document.getElementById('profileAvatar').textContent=(currentUser.name||"U").charAt(0).toUpperCase();document.getElementById('pName').textContent=currentUser.name||"—";document.getElementById('pPhone').textContent=currentUser.phone||"—";document.getElementById('pAge').textContent=currentUser.age||"—";document.getElementById('pGender').textContent=currentUser.gender||"—";document.getElementById('pBlood').textContent=currentUser.blood||"—";}
+function editProfile(){const name=prompt("Full Name:",currentUser.name||"");if(name===null)return;const phone=prompt("Phone (10 digits):",currentUser.phone||"");const age=prompt("Age (1-2 digits):",currentUser.age||"");const gender=prompt("Gender:",currentUser.gender||"");const blood=prompt("Blood Group:",currentUser.blood||"");if(phone&&!/^[0-9]{10}$/.test(phone)){showToast("Phone must be 10 digits");return;}if(age&&!/^[0-9]{1,2}$/.test(age)){showToast("Age must be 1-2 digits");return;}currentUser.name=name||currentUser.name;currentUser.phone=phone||currentUser.phone;currentUser.age=age||currentUser.age;currentUser.gender=gender||currentUser.gender;currentUser.blood=blood||currentUser.blood;localStorage.setItem('healthmate_user',JSON.stringify(currentUser));updateProfileUI();showToast("Profile updated");}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.screen===id));const backBtn=document.getElementById('backBtn'),logoArea=document.getElementById('headerLogoArea');if(id==='home'){backBtn.style.display='none';logoArea.style.display='flex';historyStack=['home'];updateGreeting();}else{backBtn.style.display='flex';logoArea.style.display='none';if(historyStack[historyStack.length-1]!==id)historyStack.push(id);}if(id==='appointments')renderAppointments();if(id==='schedule')renderSchedule();if(id==='reviews')renderReviews();if(id==='profile')updateProfileUI();if(id==='labTests')renderLabTests();if(id==='clinics')renderClinics();if(id==='paymentHistory')renderPayments();if(id==='notifications')renderNotifications();if(id==='doctors'){renderDoctors();renderSearchHistory();}if(id==='scanCentres')renderScanCentres();if(id==='genericStores')renderGenericStores();if(id==='stores24')renderStores24();if(id==='oxygen')renderOxygen();if(id==='permissions')refreshPermissionStatuses();window.scrollTo(0,0);}
+function goBack(){if(historyStack.length>1){historyStack.pop();showScreen(historyStack[historyStack.length-1]);}else showScreen('home');}
+
+function renderHomeDoctors(){document.getElementById('homeDoctors').innerHTML=doctorsData.slice(0,2).map(d=>`<div class="card doctor-card"><div class="doctor-avatar" onclick="clickSound();selectDoctor('${d.name}','${d.specialty}')">${doctorSvg}</div><div class="doctor-info" style="flex:1" onclick="clickSound();selectDoctor('${d.name}','${d.specialty}')"><h3>${d.name}</h3><p>${d.specialty} • ${d.exp}</p><span class="badge">Available</span> <span class="rating">★ ${d.rating}</span><p style="margin-top:4px;font-size:13px;font-weight:700;color:var(--primary)">₹${d.fee} fees</p></div><button class="btn btn-primary" style="width:auto;padding:8px 12px;font-size:12px;margin-left:6px" onclick="event.stopPropagation();payDoctorFee('${d.name}',${d.fee})">Pay</button></div>`).join('');}
+function getFilteredDoctors(){
+  const q=(document.getElementById('doctorSearch')?.value||'').toLowerCase().trim();
+  let list=doctorsData.slice();
+  if(doctorFilter==='available')list=list.filter(d=>d.available);
+  else if(doctorFilter&&doctorFilter!=='all')list=list.filter(d=>(d.specialty||'').toLowerCase().includes(doctorFilter.toLowerCase())||(d.degree||'').toLowerCase().includes(doctorFilter.toLowerCase()));
+  if(q)list=list.filter(d=>[d.name,d.specialty,d.degree,d.clinic].join(' ').toLowerCase().includes(q));
+  if(doctorSort==='feeAsc')list.sort((a,b)=>(a.fee||0)-(b.fee||0));
+  else if(doctorSort==='feeDesc')list.sort((a,b)=>(b.fee||0)-(a.fee||0));
+  else list.sort((a,b)=>(b.available?1:0)-(a.available?1:0)||(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0));
+  return list;
+}
+function doctorInitials(name){return (name||'').replace(/^Dr\.\s*/i,'').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function renderDoctors(){
+  const list=getFilteredDoctors();
+  const total=doctorsData.length;
+  const countEl=document.getElementById('doctorCountLabel');
+  const subEl=document.getElementById('doctorCountSub');
+  if(countEl)countEl.textContent=list.length+' doctor'+(list.length===1?'':'s');
+  if(subEl)subEl.textContent=list.length+' on screen · '+total+' total';
+  const follows=JSON.parse(localStorage.getItem('healthmate_follows')||'{}');
+  document.getElementById('doctorsList').innerHTML=list.length?list.map(d=>{
+    const initials=doctorInitials(d.name);
+    const fav=!!follows[d.name];
+    const avail=d.available!==false;
+    return `<div class="card" style="padding:14px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="dp-avatar" style="width:52px;height:52px;font-size:16px;cursor:pointer" onclick="selectDoctor('${d.name.replace(/'/g,"\\'")}','${d.specialty}')">${initials}<span class="dot" style="background:${avail?'#00c853':'#9e9e9e'}"></span></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+            <div>
+              <div style="font-size:15px;font-weight:700">${d.name}</div>
+              <div style="font-size:12px;color:#1a73e8;font-weight:600;margin-top:2px">${d.degree||''}</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px">${d.specialty}${d.exp?' · '+d.exp:''}</div>
+            </div>
+            <button type="button" class="dp-follow ${fav?'on':''}" style="font-size:18px" onclick="event.stopPropagation();toggleFollowList('${d.name.replace(/'/g,"\\'")}',this)">${fav?'♥':'♡'}</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              ${d.fee!=null?`<span style="font-size:12px;font-weight:700;color:var(--text)">Avg ₹${d.fee}</span>`:''}
+              <span class="dp-badge ${avail?'avail':''}" style="${avail?'':'background:#f5f5f5;color:#757575'}">${avail?'● Available':'● Not available'}</span>
+            </div>
+            <a href="#" onclick="event.preventDefault();selectDoctor('${d.name.replace(/'/g,"\\'")}','${d.specialty}')" style="font-size:13px;font-weight:600;color:#1a73e8;text-decoration:none">View Details ›</a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty"><p>No doctors found.</p></div>';
+}
+function toggleDoctorFilters(){
+  const p=document.getElementById('doctorFilterPanel');
+  if(p)p.style.display=p.style.display==='none'?'block':'none';
+}
+function setDoctorFilter(el){
+  clickSound();
+  document.querySelectorAll('#doctorSpecFilters .remind-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  doctorFilter=el.dataset.filter||'all';
+  renderDoctors();
+}
+function setDoctorSort(mode){
+  clickSound();
+  doctorSort=mode;
+  ['sortRelevance','sortFeeAsc','sortFeeDesc'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('selected');});
+  if(mode==='relevance')document.getElementById('sortRelevance')?.classList.add('selected');
+  if(mode==='feeAsc')document.getElementById('sortFeeAsc')?.classList.add('selected');
+  if(mode==='feeDesc')document.getElementById('sortFeeDesc')?.classList.add('selected');
+  renderDoctors();
+}
+function filterDoctors(){renderDoctors();renderSearchHistory();}
+function getSearchHistory(){try{return JSON.parse(localStorage.getItem('healthmate_search_history')||'[]');}catch{return[];}}
+function saveSearchHistory(){
+  const q=(document.getElementById('doctorSearch')?.value||'').trim();
+  if(!q||q.length<2)return;
+  let h=getSearchHistory().filter(x=>x.toLowerCase()!==q.toLowerCase());
+  h.unshift(q);
+  h=h.slice(0,8);
+  localStorage.setItem('healthmate_search_history',JSON.stringify(h));
+  renderSearchHistory();
+}
+function clearSearchHistory(){
+  clickSound();
+  localStorage.removeItem('healthmate_search_history');
+  renderSearchHistory();
+  showToast('Search history cleared');
+}
+function renderSearchHistory(){
+  const box=document.getElementById('searchHistoryBox');
+  const list=document.getElementById('searchHistoryList');
+  if(!box||!list)return;
+  const h=getSearchHistory();
+  if(!h.length){box.style.display='none';return;}
+  box.style.display='block';
+  list.innerHTML=h.map(q=>`<button type="button" class="remind-chip" onclick="applySearchHistory('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
+}
+function applySearchHistory(q){
+  clickSound();
+  const inp=document.getElementById('doctorSearch');
+  if(inp)inp.value=q;
+  filterDoctors();
+}
+function toggleFollowList(name,btn){
+  clickSound();
+  const f=JSON.parse(localStorage.getItem('healthmate_follows')||'{}');
+  f[name]=!f[name];
+  localStorage.setItem('healthmate_follows',JSON.stringify(f));
+  if(btn){btn.classList.toggle('on',!!f[name]);btn.textContent=f[name]?'♥':'♡';}
+  showToast(f[name]?'Following doctor':'Unfollowed');
+}
+function payDoctorFee(name,fee){
+  if(!confirm('Pay ₹'+fee+' consultation fee for '+name+'?'))return;
+  paySound();
+  savePayment({id:'pay_'+Date.now(),type:'Doctor Fee',for:name,amount:fee,date:new Date().toLocaleString(),status:'Paid'});
+  showToast('Payment of ₹'+fee+' successful');
+}
+function renderLabTests(){
+  document.getElementById('labTestsList').innerHTML=labTestsData.map(t=>`
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="flex:1"><h4 style="font-size:14px">${t.name}</h4>
+      <p style="font-size:12px;color:var(--text-light)">Report: ${t.time}</p>
+      <p style="font-size:14px;font-weight:700;color:var(--primary);margin-top:2px">₹${t.price}</p></div>
+      <button class="btn btn-primary" style="width:auto;padding:8px 14px;font-size:12px" onclick="bookLabTest('${t.name.replace(/'/g,"\\'")}',${t.price})">Book</button>
+    </div>`).join('');
+}
+function bookLabTest(name,price){
+  if(!confirm('Book '+name+' for ₹'+price+'?'))return;
+  paySound();
+  savePayment({id:'lab_'+Date.now(),type:'Lab Test',for:name,amount:price,date:new Date().toLocaleString(),status:'Paid'});
+  showToast('Lab test booked • ₹'+price+' paid');
+}
+function renderPayments(){
+  const list=getPayments();
+  const el=document.getElementById('paymentList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon" style="color:var(--primary)"><svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:currentColor;fill:none;stroke-width:1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><p>No payments yet.</p></div>';return;}
+  el.innerHTML=list.map(p=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h4 style="font-size:14px">${p.for}</h4>
+        <p style="font-size:12px;color:var(--text-light)">${p.type} • ${p.date}</p></div>
+        <div style="text-align:right"><p style="font-size:16px;font-weight:700;color:var(--primary)">₹${p.amount}</p>
+        <span class="status-pill status-confirmed">${p.status}</span></div>
+      </div>
+    </div>`).join('');
+}
+function renderDepartments(){
+const I={
+heart:'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+lungs:'<svg viewBox="0 0 24 24"><path d="M6.5 3A3.5 3.5 0 0 0 3 6.5V12c0 4 2 7 5 8.5"/><path d="M17.5 3A3.5 3.5 0 0 1 21 6.5V12c0 4-2 7-5 8.5"/><path d="M12 3v18"/></svg>',
+brain:'<svg viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></svg>',
+eye:'<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+bone:'<svg viewBox="0 0 24 24"><path d="M17 10c.7-.7 1.5-1 2.5-1a3.5 3.5 0 0 1 0 7c-1 0-1.8-.3-2.5-1"/><path d="M7 10c-.7-.7-1.5-1-2.5-1a3.5 3.5 0 0 0 0 7c1 0 1.8-.3 2.5-1"/><path d="M7 14l10-4M7 10l10 4"/></svg>',
+baby:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2"/></svg>',
+user:'<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+users:'<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+activity:'<svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+droplet:'<svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
+shield:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+scissors:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>',
+syringe:'<svg viewBox="0 0 24 24"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/></svg>',
+pill:'<svg viewBox="0 0 24 24"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>',
+tooth:'<svg viewBox="0 0 24 24"><path d="M9 3c-1.5 0-2.5 1-3 2.5C5 7 5 9 6 11c.5 1 1 3 1 5 0 2 1 3 2 3s1.5-1 2-2c.5 1 1 2 2 2s2-1 2-3c0-2 .5-4 1-5 1-2 1-4 0-5.5C15.5 4 14.5 3 13 3c-1 0-1.5.5-2 1-.5-.5-1-1-2-1z"/></svg>',
+ear:'<svg viewBox="0 0 24 24"><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a2 2 0 0 1-4 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/></svg>',
+leaf:'<svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+apple:'<svg viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>',
+zap:'<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+camera:'<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+move:'<svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>',
+sparkle:'<svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>',
+alert:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+kidney:'<svg viewBox="0 0 24 24"><path d="M7 3c-2 0-4 2-4 5 0 4 3 7 5 9 1 1 2 2 4 2s3-1 4-2c2-2 5-5 5-9 0-3-2-5-4-5-1.5 0-2.5 1-3 2-.5-1-1.5-2-3-2z"/></svg>',
+stethoscope:'<svg viewBox="0 0 24 24"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>',
+woman:'<svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M12 12v10"/><path d="M8 18h8"/></svg>',
+ribbon:'<svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>',
+flask:'<svg viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>'
+};
+const list=[
+{n:"Allergist",s:"Food Type",i:I.alert,bg:"#fff3e0",c:"#e65100"},
+{n:"Allergy and Immunology",s:"Allergy & Immunity",i:I.shield,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Andrology",s:"Men's Health",i:I.user,bg:"#e0f7f5",c:"#008f84"},
+{n:"Anesthesiology",s:"Anesthesia Care",i:I.syringe,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Ayurveda and Unani Medicine",s:"Traditional Medicine",i:I.leaf,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"Cardiology",s:"Heart Specialists",i:I.heart,bg:"#ffebee",c:"#c62828"},
+{n:"CTVS",s:"Heart Surgery",i:I.heart,bg:"#fce4ec",c:"#c2185b"},
+{n:"Chest Specialist",s:"Pulmonology",i:I.lungs,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Consultant Psychologist",s:"Mental Health",i:I.brain,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Critical Care Medicine",s:"ICU & Emergency",i:I.activity,bg:"#fff3e0",c:"#e65100"},
+{n:"Dentistry Oral and Maxillofacial",s:"Dental Surgery",i:I.tooth,bg:"#e0f7f5",c:"#008f84"},
+{n:"Dermatology and Venereology",s:"Skin & Hair",i:I.sun,bg:"#fff8e1",c:"#f9a825"},
+{n:"Diabetology",s:"Diabetes Care",i:I.droplet,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Dietetics",s:"Nutrition & Diet",i:I.apple,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"ENT Specialist",s:"Ear, Nose, Throat",i:I.ear,bg:"#fce4ec",c:"#c2185b"},
+{n:"Endocrinology",s:"Hormone Disorders",i:I.flask,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Gastroenterology (GI) Surgery",s:"Digestive Surgery",i:I.activity,bg:"#fff3e0",c:"#e65100"},
+{n:"General Medicine",s:"Internal Medicine",i:I.stethoscope,bg:"#e0f7f5",c:"#008f84"},
+{n:"General Physician",s:"Primary Care",i:I.user,bg:"#e3f2fd",c:"#1565c0"},
+{n:"General Surgery",s:"Surgical Care",i:I.scissors,bg:"#ffebee",c:"#c62828"},
+{n:"Hematology",s:"Blood Disorders",i:I.droplet,bg:"#fce4ec",c:"#c2185b"},
+{n:"Hepatology",s:"Liver Care",i:I.activity,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"Infertility & Reproductive Medicine",s:"Fertility Care",i:I.users,bg:"#fce4ec",c:"#c2185b"},
+{n:"Kidney Transplant",s:"Renal Transplant",i:I.kidney,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Laparoscopy",s:"Minimally Invasive",i:I.scissors,bg:"#e0f7f5",c:"#008f84"},
+{n:"Laparoscopic Urologic Surgery",s:"Uro Surgery",i:I.scissors,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Laser Treatment",s:"Laser Care",i:I.zap,bg:"#fff3e0",c:"#e65100"},
+{n:"Neonatology",s:"Newborn Care",i:I.baby,bg:"#fce4ec",c:"#c2185b"},
+{n:"Nephrology",s:"Kidney Specialists",i:I.kidney,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Neurology",s:"Brain & Nerves",i:I.brain,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Neuropsychiatry",s:"Brain & Mental Health",i:I.brain,bg:"#ede7f6",c:"#5e35b1"},
+{n:"Neurosurgery",s:"Brain Surgery",i:I.brain,bg:"#ffebee",c:"#c62828"},
+{n:"Obstetrics and Gynaecology (OB-G)",s:"Women's Health",i:I.woman,bg:"#fce4ec",c:"#c2185b"},
+{n:"Oncological Surgery",s:"Cancer Surgery",i:I.ribbon,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"Oncology",s:"Cancer Care",i:I.ribbon,bg:"#ede7f6",c:"#5e35b1"},
+{n:"Ophthalmic Surgery",s:"Eye Surgery",i:I.eye,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Ophthalmology",s:"Eye Care",i:I.eye,bg:"#e0f7f5",c:"#008f84"},
+{n:"Orthopedics",s:"Bones & Joints",i:I.bone,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"ENT / Oto-Rhino-Laryngology",s:"ENT Care",i:I.ear,bg:"#fff3e0",c:"#e65100"},
+{n:"Pediatric Haemato-oncologist",s:"Child Cancer Care",i:I.baby,bg:"#fce4ec",c:"#c2185b"},
+{n:"Pediatrics",s:"Child Care",i:I.baby,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Physiotherapy",s:"Rehab & Therapy",i:I.move,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"Plastic Surgery",s:"Cosmetic Surgery",i:I.sparkle,bg:"#f3e5f5",c:"#7b1fa2"},
+{n:"PRP Therapy (Hair Implant)",s:"Hair Restoration",i:I.sparkle,bg:"#fff8e1",c:"#f9a825"},
+{n:"Psychiatry",s:"Mental Health",i:I.brain,bg:"#ede7f6",c:"#5e35b1"},
+{n:"Pulmonology",s:"Chest & Lungs",i:I.lungs,bg:"#e3f2fd",c:"#1565c0"},
+{n:"Radiology",s:"Imaging Center",i:I.camera,bg:"#e0f7f5",c:"#008f84"},
+{n:"Reconstructive Surgery",s:"Restorative Surgery",i:I.scissors,bg:"#fff3e0",c:"#e65100"},
+{n:"Rehabilitation Medicine",s:"Recovery Care",i:I.move,bg:"#e8f5e9",c:"#2e7d32"},
+{n:"Reproductive Endocrinology (IVF)",s:"Fertility & IVF",i:I.users,bg:"#fce4ec",c:"#c2185b"},
+{n:"Rheumatology",s:"Joints & Arthritis",i:I.bone,bg:"#fff3e0",c:"#e65100"},
+{n:"Skin & Beauty Specialist",s:"Skin & Beauty",i:I.sun,bg:"#fff8e1",c:"#f9a825"},
+{n:"Sexology",s:"Sexual Health",i:I.heart,bg:"#fce4ec",c:"#c2185b"},
+{n:"Trauma Surgery",s:"Trauma Care",i:I.alert,bg:"#ffebee",c:"#c62828"},
+{n:"Urology",s:"Urinary System",i:I.droplet,bg:"#e3f2fd",c:"#1565c0"}
+];
+const sel=document.getElementById('deptSelect');
+if(sel){sel.innerHTML='<option value="">Choose department</option>'+list.map(s=>`<option>${s.n}</option>`).join('');}
+document.getElementById('deptGrid').innerHTML=list.map(d=>`<div class="dept-card" onclick="selectDept('${d.n.replace(/'/g,"\\'")}')"><div class="dept-icon" style="background:${d.bg};color:${d.c}">${d.i}</div><h3>${d.n}</h3><p>${d.s}</p></div>`).join('');
+}
+function renderSuggestions(){document.getElementById('suggestionsList').innerHTML=suggestionsData.map(s=>`<div class="suggestion-card"><h4><svg viewBox="0 0 24 24" style="width:16px;height:16px;vertical-align:-2px;stroke:#e67e22;fill:none;stroke-width:2;display:inline"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> ${s.title}</h4><p>${s.text}</p></div>`).join('');}
+function selectDoctor(name,specialty){
+  clickSound();
+  const d=doctorsData.find(x=>x.name===name)||doctorsData.find(x=>x.specialty===specialty);
+  if(d){openDoctorProfile(d);return;}
+  const map={Cardiologist:"Cardiology",Orthopedic:"Orthopedics",Pediatrician:"Pediatrics",Neurologist:"Neurology",Dermatologist:"Dermatology"};
+  document.getElementById('doctorSelect').value=name+" – "+specialty;
+  document.getElementById('deptSelect').value=map[specialty]||"General Medicine";
+  showScreen('book');
+}
+function openDoctorProfile(d){
+  currentDoctorProfile=d;
+  const initials=d.name.replace(/^Dr\.\s*/,'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const followed=!!(JSON.parse(localStorage.getItem('healthmate_follows')||'{}')[d.name]);
+  document.getElementById('doctorProfileBody').innerHTML=`
+    <div class="dp-card">
+      <div class="dp-top">
+        <div class="dp-avatar">${initials}${d.available?'<span class="dot"></span>':''}</div>
+        <div style="flex:1">
+          <div class="dp-name">${d.name.replace(/^Dr\.\s*/,'')}</div>
+          <div class="dp-degree">${d.degree||''}</div>
+          <div class="dp-badges">
+            <span class="dp-badge avail">● Available</span>
+            <span class="dp-badge fee">Avg ₹${d.fee}</span>
+          </div>
+          <div class="dp-spec"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${d.specialty}</div>
+        </div>
+      </div>
+      <div class="dp-stats">
+        <div class="st"><div class="n">${d.patients||0}</div><div class="l">Patients</div></div>
+        <div class="st"><div class="n">${d.schedules||0}</div><div class="l">Schedules</div></div>
+        <div class="st"><div class="n">★ ${d.rating}</div><div class="l">Rating</div></div>
+        <div class="st"><button class="dp-follow ${followed?'on':''}" id="followBtn" onclick="toggleFollow('${d.name.replace(/'/g,"\\'")}')">${followed?'♥':'♡'}</button><div class="l">Follow</div></div>
+      </div>
+    </div>
+    <div class="dp-card" style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fff8e1;display:flex;align-items:center;justify-content:center;color:#f9a825">★</div>
+        <div><div style="font-weight:600;font-size:13px">Rating ${d.rating}</div><div style="font-size:11px;color:var(--text-light)">Based on patient reviews</div></div>
+      </div>
+      <a href="#" onclick="clickSound();showScreen('reviews');return false" style="font-size:13px;font-weight:600;color:#1a73e8;text-decoration:none">See all ›</a>
+    </div>
+    <div class="dp-card">
+      <div class="dp-clinic-name"><span>${d.clinic||'HealthMate Clinic'}</span><span class="dp-active">Active</span></div>
+      <div class="dp-pay">₹${d.fee} · ${d.payment||'Pay at Clinic'}</div>
+      <div class="dp-addr">📍 ${d.address||''}</div>
+      <div class="dp-phone">📞 ${d.phone||''}</div>
+      <div class="dp-actions">
+        <button type="button" onclick="openDirections('${(d.address||'').replace(/'/g,"\\'")}')">↗ Directions</button>
+        <button type="button" onclick="callDoctor('${d.phone||''}')">📞 Call</button>
+      </div>
+      <div class="dp-sched-title">Schedule</div>
+      <div class="dp-sched-row"><span>${d.schedule||'Mon–Sat'}</span><span style="font-weight:600;color:var(--text)">${d.hours||''}</span></div>
+      <button type="button" class="dp-book" onclick="bookFromProfile()">📅 Book Appointment</button>
+      <a class="dp-clinic-link" href="#" onclick="showToast('Clinic: '+(currentDoctorProfile&&currentDoctorProfile.clinic||''));return false">View Clinic Details ›</a>
+    </div>`;
+  showScreen('doctorProfile');
+}
+function toggleFollow(name){
+  clickSound();
+  const f=JSON.parse(localStorage.getItem('healthmate_follows')||'{}');
+  f[name]=!f[name];
+  localStorage.setItem('healthmate_follows',JSON.stringify(f));
+  const btn=document.getElementById('followBtn');
+  if(btn){btn.classList.toggle('on',!!f[name]);btn.textContent=f[name]?'♥':'♡';}
+  showToast(f[name]?'Following doctor':'Unfollowed');
+}
+function openDirections(addr){
+  clickSound();
+  if(!addr){showToast('Address not available');return;}
+  window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr),'_blank');
+}
+function callDoctor(phone){
+  clickSound();
+  if(!phone){showToast('Phone not available');return;}
+  window.location.href='tel:'+phone;
+}
+function requestAmbulance(){
+  clickSound();
+  const name=document.getElementById('ambName')?.value?.trim();
+  const phone=document.getElementById('ambPhone')?.value?.trim();
+  const loc=document.getElementById('ambLoc')?.value?.trim();
+  if(!name||!phone||!loc){showToast('Please fill all fields');return;}
+  if(!/^[0-9]{10}$/.test(phone)){showToast('Enter valid 10-digit phone');return;}
+  showToast('Ambulance request sent · Help is on the way');
+  playLoudAlarm();
+  setTimeout(()=>{if(confirm('Call 108 emergency now?'))window.location.href='tel:108';},800);
+}
+function requestBlood(){
+  clickSound();
+  const name=document.getElementById('bbName')?.value?.trim();
+  const group=document.getElementById('bbGroup')?.value;
+  const phone=document.getElementById('bbPhone')?.value?.trim();
+  if(!name||!phone){showToast('Please fill name and phone');return;}
+  if(!/^[0-9]{10}$/.test(phone)){showToast('Enter valid 10-digit phone');return;}
+  showToast('Blood request submitted for '+group);
+}
+function setPermStatus(id,ok,msg){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=ok?'#2e7d32':(ok===false?'#c62828':'');
+}
+function requestCameraPerm(){
+  clickSound();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    setPermStatus('permCamStatus',false,'Camera not supported on this device');
+    showToast('Camera not supported');return;
+  }
+  navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{
+    stream.getTracks().forEach(t=>t.stop());
+    localStorage.setItem('healthmate_perm_camera','granted');
+    setPermStatus('permCamStatus',true,'Camera allowed ✓');
+    showToast('Camera permission granted');
+  }).catch(()=>{
+    localStorage.setItem('healthmate_perm_camera','denied');
+    setPermStatus('permCamStatus',false,'Camera denied — enable in browser settings');
+    showToast('Camera permission denied');
+  });
+}
+function requestLocationPerm(){
+  clickSound();
+  if(!navigator.geolocation){
+    setPermStatus('permLocStatus',false,'Location not supported');
+    showToast('Location not supported');return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      localStorage.setItem('healthmate_perm_location','granted');
+      localStorage.setItem('healthmate_last_loc',JSON.stringify({lat:pos.coords.latitude,lng:pos.coords.longitude}));
+      setPermStatus('permLocStatus',true,'Location allowed ✓');
+      showToast('Location permission granted');
+    },
+    ()=>{
+      localStorage.setItem('healthmate_perm_location','denied');
+      setPermStatus('permLocStatus',false,'Location denied — enable in browser settings');
+      showToast('Location permission denied');
+    },
+    {enableHighAccuracy:true,timeout:10000}
+  );
+}
+function requestAudioPerm(){
+  clickSound();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    setPermStatus('permMicStatus',false,'Microphone not supported');
+    showToast('Audio not supported');return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    stream.getTracks().forEach(t=>t.stop());
+    localStorage.setItem('healthmate_perm_audio','granted');
+    setPermStatus('permMicStatus',true,'Audio / mic allowed ✓');
+    showToast('Audio permission granted');
+    try{getAudio();}catch(e){}
+  }).catch(()=>{
+    localStorage.setItem('healthmate_perm_audio','denied');
+    setPermStatus('permMicStatus',false,'Audio denied — enable in browser settings');
+    showToast('Audio permission denied');
+  });
+}
+function requestStoragePerm(){
+  clickSound();
+  try{
+    localStorage.setItem('healthmate_perm_storage','granted');
+    localStorage.setItem('healthmate_storage_test',String(Date.now()));
+    if(navigator.storage&&navigator.storage.persist){
+      navigator.storage.persist().then(ok=>{
+        setPermStatus('permStoreStatus',true,ok?'Storage allowed (persistent) ✓':'Storage allowed ✓');
+        showToast(ok?'Persistent storage granted':'Storage allowed');
+      }).catch(()=>{
+        setPermStatus('permStoreStatus',true,'Storage allowed ✓');
+        showToast('Storage allowed');
+      });
+    }else{
+      setPermStatus('permStoreStatus',true,'Storage allowed ✓');
+      showToast('Storage allowed');
+    }
+  }catch(e){
+    localStorage.setItem('healthmate_perm_storage','denied');
+    setPermStatus('permStoreStatus',false,'Storage blocked');
+    showToast('Storage not available');
+  }
+}
+function requestAllPermissions(){
+  clickSound();
+  requestCameraPerm();
+  setTimeout(requestLocationPerm,400);
+  setTimeout(requestAudioPerm,800);
+  setTimeout(requestStoragePerm,1200);
+}
+function refreshPermissionStatuses(){
+  const cam=localStorage.getItem('healthmate_perm_camera');
+  const loc=localStorage.getItem('healthmate_perm_location');
+  const mic=localStorage.getItem('healthmate_perm_audio');
+  const store=localStorage.getItem('healthmate_perm_storage');
+  if(cam==='granted')setPermStatus('permCamStatus',true,'Camera allowed ✓');
+  else if(cam==='denied')setPermStatus('permCamStatus',false,'Camera denied — enable in browser settings');
+  if(loc==='granted')setPermStatus('permLocStatus',true,'Location allowed ✓');
+  else if(loc==='denied')setPermStatus('permLocStatus',false,'Location denied — enable in browser settings');
+  if(mic==='granted')setPermStatus('permMicStatus',true,'Audio / mic allowed ✓');
+  else if(mic==='denied')setPermStatus('permMicStatus',false,'Audio denied — enable in browser settings');
+  if(store==='granted')setPermStatus('permStoreStatus',true,'Storage allowed ✓');
+}
+const scanCentresData=[
+{name:"HealthMate Imaging Center",services:"CT Scan, X-Ray, USG",address:"Medical Complex, MG Road",phone:"9876501001",hours:"8 AM – 8 PM"},
+{name:"City Diagnostic & Radiology",services:"CT, MRI, Digital X-Ray",address:"Civil Lines",phone:"9876501002",hours:"24 hours"},
+{name:"Precision Scan Lab",services:"X-Ray, OPG, BMD",address:"Hospital Road",phone:"9876501003",hours:"9 AM – 9 PM"}
+];
+const genericStoresData=[
+{name:"Jan Aushadhi Kendra",type:"Generic",address:"Main Market",phone:"9876502001",hours:"9 AM – 9 PM"},
+{name:"HealthMate Generic Pharmacy",type:"Generic",address:"Near Bus Stand",phone:"9876502002",hours:"8 AM – 10 PM"},
+{name:"Care Plus Medicals",type:"Generic & OTC",address:"Ring Road",phone:"9876502003",hours:"9 AM – 9 PM"}
+];
+const stores24Data=[
+{name:"NightCare Pharmacy",type:"24 Hours",address:"Station Road",phone:"9876503001",hours:"Open 24×7"},
+{name:"Apollo 24x7 MedStore",type:"24 Hours",address:"City Center",phone:"9876503002",hours:"Open 24×7"},
+{name:"Emergency Meds Hub",type:"24 Hours",address:"Hospital Gate",phone:"9876503003",hours:"Open 24×7"}
+];
+const oxygenData=[
+{name:"OxyLife Suppliers",type:"Cylinders & concentrators",address:"Industrial Area",phone:"9876504001",hours:"24 hours delivery"},
+{name:"HealthMate Oxygen Desk",type:"Medical oxygen",address:"Main Hospital",phone:"8421293110",hours:"24×7"},
+{name:"BreatheEasy Rentals",type:"Cylinder refill & rent",address:"Warehouse Road",phone:"9876504002",hours:"8 AM – 10 PM"}
+];
+function renderServiceList(elId,list){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.innerHTML=list.map(s=>`<div class="card">
+    <h3 style="font-size:15px;font-weight:700">${s.name}</h3>
+    <p style="font-size:12px;color:var(--primary);font-weight:600;margin-top:4px">${s.services||s.type||''}</p>
+    <p style="font-size:12px;color:var(--text-light);margin-top:6px">📍 ${s.address}</p>
+    <p style="font-size:12px;margin-top:2px">📞 ${s.phone}</p>
+    <p style="font-size:11px;color:var(--text-light);margin-top:4px">🕒 ${s.hours}</p>
+    <div class="dp-actions" style="margin-top:10px;margin-bottom:0">
+      <button type="button" onclick="openDirections('${(s.address||'').replace(/'/g,"\\'")}')">↗ Directions</button>
+      <button type="button" onclick="callDoctor('${s.phone||''}')">📞 Call</button>
+    </div>
+  </div>`).join('');
+}
+function renderScanCentres(){renderServiceList('scanCentresList',scanCentresData);}
+function renderGenericStores(){renderServiceList('genericStoresList',genericStoresData);}
+function renderStores24(){renderServiceList('stores24List',stores24Data);}
+function renderOxygen(){renderServiceList('oxygenList',oxygenData);}
+function bookFromProfile(){
+  clickSound();
+  if(!currentDoctorProfile)return;
+  const d=currentDoctorProfile;
+  const map={Cardiologist:"Cardiology",Orthopedic:"Orthopedics",Pediatrician:"Pediatrics",Neurologist:"Neurology",Dermatologist:"Dermatology"};
+  document.getElementById('doctorSelect').value=d.name+' – '+d.specialty;
+  document.getElementById('deptSelect').value=map[d.specialty]||d.specialty||"General Medicine";
+  showScreen('book');
+}
+function selectDept(name){document.getElementById('deptSelect').value=name;showScreen('book');}
+function filterDepartments(q){
+  q=(q||'').toLowerCase().trim();
+  document.querySelectorAll('#deptGrid .dept-card').forEach(card=>{
+    const name=(card.querySelector('h3')?.textContent||'').toLowerCase();
+    const sub=(card.querySelector('p')?.textContent||'').toLowerCase();
+    card.style.display=(!q||name.includes(q)||sub.includes(q))?'':'none';
+  });
+}
+
+function selectTime(el){document.querySelectorAll('#timeSlots .time-slot').forEach(t=>t.classList.remove('selected'));el.classList.add('selected');selectedTime=el.textContent;}
+function selectOnlineTime(el){document.querySelectorAll('#onlineConsult .time-slot').forEach(t=>t.classList.remove('selected'));el.classList.add('selected');selectedOnlineTime=el.textContent;}
+function selectConsultLang(el){document.querySelectorAll('.lang-chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');selectedConsultLang=el.textContent;}
+
+function goToPatientDetails(){if(!document.getElementById('deptSelect').value||!document.getElementById('doctorSelect').value||!document.getElementById('apptDate').value||!selectedTime){showToast("Please fill all required fields");return;}showScreen('patient');}
+function submitAppointment(){const name=document.getElementById('patientName').value.trim(),age=document.getElementById('patientAge').value,gender=document.getElementById('patientGender').value,phone=document.getElementById('patientPhone').value.trim(),reason=document.getElementById('patientReason').value.trim();if(!name||!age||!gender||!phone){showToast("Please complete patient details");return;}if(!/^[0-9]{10}$/.test(phone)){showToast("Phone must be exactly 10 digits");return;}if(!/^[0-9]{1,2}$/.test(age)){showToast("Age must be 1 or 2 digits");return;}const doctorFull=document.getElementById('doctorSelect').value;pendingAppointment={id:"appt_"+Date.now(),patientName:name,age:parseInt(age),gender,phone,doctor:doctorFull.split(" – ")[0],department:document.getElementById('deptSelect').value,date:document.getElementById('apptDate').value,time:selectedTime,reason,status:"Confirmed",type:"In-clinic",createdAt:new Date().toISOString()};document.getElementById('cPatient').textContent=name;document.getElementById('cDoctor').textContent=pendingAppointment.doctor;document.getElementById('cDept').textContent=pendingAppointment.department;document.getElementById('cDateTime').textContent=pendingAppointment.date+" • "+selectedTime;document.getElementById('confirmOverlay').classList.add('show');}
+function bookOnlineConsult(){const doctor=document.getElementById('onlineDoctor').value,date=document.getElementById('onlineDate').value;if(!doctor||!date||!selectedOnlineTime||!selectedConsultLang){showToast("Please fill all fields including language");return;}pendingAppointment={id:"online_"+Date.now(),patientName:currentUser?.name||"User",age:currentUser?.age||"",gender:currentUser?.gender||"",phone:currentUser?.phone||"",doctor:doctor.split(" – ")[0],department:"Online Consultation",date,time:selectedOnlineTime,reason:"Language: "+selectedConsultLang,status:"Confirmed",type:"Online",language:selectedConsultLang,createdAt:new Date().toISOString()};document.getElementById('cPatient').textContent=pendingAppointment.patientName;document.getElementById('cDoctor').textContent=pendingAppointment.doctor;document.getElementById('cDept').textContent="Online • "+selectedConsultLang;document.getElementById('cDateTime').textContent=date+" • "+selectedOnlineTime;document.getElementById('confirmOverlay').classList.add('show');}
+function closeConfirm(){if(pendingAppointment){const list=getAppointments();list.push(pendingAppointment);saveAppointments(list);pendingAppointment=null;}document.getElementById('confirmOverlay').classList.remove('show');["patientName","patientAge","patientGender","patientPhone","patientReason"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});setTimeout(()=>{showScreen('appointments');showToast("Appointment confirmed & saved");},300);}
+
+function getAppointments(){try{return JSON.parse(localStorage.getItem('healthmate_appointments')||'[]');}catch{return[];}}
+function saveAppointments(list){localStorage.setItem('healthmate_appointments',JSON.stringify(list));}
+function renderAppointments(){const container=document.getElementById('appointmentsList'),list=getAppointments();if(!list.length){container.innerHTML=`<div class="empty"><div class="empty-icon" style="color:var(--primary)"><svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:currentColor;fill:none;stroke-width:1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><p>No appointments yet.</p></div>`;return;}list.sort((a,b)=>new Date(b.createdAt||b.date)-new Date(a.createdAt||a.date));container.innerHTML=list.map(a=>{const d=new Date(a.date);const statusClass=a.status==="Confirmed"?"status-confirmed":a.status==="Pending"?"status-pending":"status-cancelled";const canCancel=a.status==="Confirmed"||a.status==="Pending";return `<div class="card appt-card"><div class="appt-date"><div class="day">${d.getDate()}</div><div class="month">${d.toLocaleString('en',{month:'short'})}</div></div><div class="appt-info" style="flex:1"><h3>${a.doctor}</h3><p>${a.department} • ${a.time}${a.type==="Online"?' <span style="color:#7b1fa2;font-weight:600">Online</span>':""}</p><p style="font-size:11px;color:var(--text-light)">${a.patientName||""} ${a.phone?"• "+a.phone:""}</p><span class="status-pill ${statusClass}">${a.status}</span>${canCancel?`<div><button class="cancel-btn" onclick="cancelAppointment('${a.id}')">Cancel</button></div>`:""}</div></div>`;}).join('');}
+function cancelAppointment(id){if(!confirm("Cancel this appointment?"))return;const list=getAppointments(),idx=list.findIndex(a=>a.id===id);if(idx!==-1){list[idx].status="Cancelled";saveAppointments(list);renderAppointments();showToast("Appointment cancelled");}}
+
+function getSchedule(){try{return JSON.parse(localStorage.getItem('healthmate_schedule')||'null');}catch{return null;}}
+function saveSchedule(list){localStorage.setItem('healthmate_schedule',JSON.stringify(list));}
+const medSvg='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>';
+function initSchedule(){let list=getSchedule();if(!list){list=[{id:"m1",name:"Amlodipine 5mg",note:"1 tablet after breakfast",time:"08:00 AM",alarm:true},{id:"m2",name:"Metformin 500mg",note:"1 tablet with lunch",time:"01:00 PM",alarm:true},{id:"m3",name:"Atorvastatin 10mg",note:"1 tablet at bedtime",time:"09:30 PM",alarm:true}];saveSchedule(list);}}
+function renderSchedule(){initSchedule();const list=getSchedule();document.getElementById('scheduleList').innerHTML=list.map(m=>`<div class="schedule-item"><div class="med-icon">${medSvg}</div><div class="med-info"><h4>${m.name}</h4><p>${m.note}</p><div class="med-actions"><button onclick="editMedicine('${m.id}')">Edit</button><button onclick="toggleMedAlarm('${m.id}')">${m.alarm?'🔔 Alarm ON':'🔕 Alarm OFF'}</button><button onclick="testMedAlarm('${m.name.replace(/'/g,"\\'")}')">Test</button><button onclick="deleteMedicine('${m.id}')">Delete</button></div></div><div class="med-time">${m.time}</div></div>`).join('')||"<p style='padding:12px;color:var(--text-light)'>No medicines added.</p>";}
+function addMedicine(){const name=prompt("Medicine name:");if(!name)return;const note=prompt("Instructions:")||"";const time=prompt("Time (e.g. 08:00 AM):")||"08:00 AM";const list=getSchedule()||[];list.push({id:"m"+Date.now(),name,note,time,alarm:true});saveSchedule(list);renderSchedule();scheduleMedAlarms();showToast("Medicine added · Alarm ON");}
+function toggleMedAlarm(id){
+  clickSound();
+  const list=getSchedule();
+  const m=list.find(x=>x.id===id);
+  if(!m)return;
+  m.alarm=!m.alarm;
+  saveSchedule(list);
+  renderSchedule();
+  scheduleMedAlarms();
+  showToast(m.alarm?'Alarm enabled':'Alarm disabled');
+}
+function playLoudAlarm(){
+  try{
+    const ctx=getAudio();
+    const now=ctx.currentTime;
+    for(let i=0;i<6;i++){
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.type='square';
+      o.frequency.value=i%2===0?880:1175;
+      g.gain.value=0.35;
+      o.connect(g);g.connect(ctx.destination);
+      const t=now+i*0.22;
+      o.start(t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o.stop(t+0.22);
+    }
+  }catch(e){}
+}
+function testMedAlarm(name){
+  clickSound();
+  playLoudAlarm();
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    new Notification('Medicine reminder',{body:'Time to take: '+(name||'your medicine'),tag:'med-alarm'});
+  }
+  showToast('Alarm: '+(name||'Medicine')+' — take now');
+}
+function parseMedTime(str){
+  if(!str)return null;
+  const m=str.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if(!m)return null;
+  let h=parseInt(m[1],10),min=parseInt(m[2],10);
+  const ap=(m[3]||'').toUpperCase();
+  if(ap==='PM'&&h<12)h+=12;
+  if(ap==='AM'&&h===12)h=0;
+  return{h,min};
+}
+let medAlarmTimers=[];
+function scheduleMedAlarms(){
+  medAlarmTimers.forEach(clearTimeout);
+  medAlarmTimers=[];
+  const list=getSchedule()||[];
+  const now=new Date();
+  list.forEach(m=>{
+    if(!m.alarm)return;
+    const t=parseMedTime(m.time);
+    if(!t)return;
+    const next=new Date();
+    next.setHours(t.h,t.min,0,0);
+    if(next<=now)next.setDate(next.getDate()+1);
+    const delay=next-now;
+    if(delay>0&&delay<86400000*2){
+      const tid=setTimeout(()=>{
+        playLoudAlarm();
+        showToast('Medicine time: '+m.name);
+        if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+          new Notification('Medicine Alarm',{body:m.name+(m.note?' — '+m.note:''),tag:'med-'+m.id,requireInteraction:true});
+        }
+        scheduleMedAlarms();
+      },delay);
+      medAlarmTimers.push(tid);
+    }
+  });
+}
+function requestNotifPermission(){
+  if(typeof Notification!=='undefined'&&Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+function editMedicine(id){const list=getSchedule(),m=list.find(x=>x.id===id);if(!m)return;const name=prompt("Medicine name:",m.name);if(name===null)return;const note=prompt("Instructions:",m.note);const time=prompt("Time:",m.time);m.name=name||m.name;m.note=note??m.note;m.time=time||m.time;saveSchedule(list);renderSchedule();scheduleMedAlarms();showToast("Updated");}
+function deleteMedicine(id){if(!confirm("Remove this medicine?"))return;saveSchedule(getSchedule().filter(x=>x.id!==id));renderSchedule();scheduleMedAlarms();showToast("Removed");}
+
+function setRating(v){currentRating=v;document.querySelectorAll('#starRating .star').forEach(s=>s.classList.toggle('active',parseInt(s.dataset.v)<=v));}
+function getReviews(){try{return JSON.parse(localStorage.getItem('healthmate_reviews')||'[]');}catch{return[];}}
+function submitReview(){const doctor=document.getElementById('reviewDoctor').value,text=document.getElementById('reviewText').value.trim();if(!doctor||!currentRating){showToast("Select doctor and rating");return;}const reviews=getReviews();reviews.unshift({id:"r"+Date.now(),doctor,rating:currentRating,text:text||"No comment",user:currentUser?.name||"Anonymous",date:new Date().toLocaleDateString()});localStorage.setItem('healthmate_reviews',JSON.stringify(reviews));document.getElementById('reviewText').value="";currentRating=0;document.querySelectorAll('#starRating .star').forEach(s=>s.classList.remove('active'));renderReviews();showToast("Review submitted");}
+function renderReviews(){const list=getReviews();document.getElementById('reviewsList').innerHTML=list.length?list.map(r=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h4 style="font-size:14px">${r.doctor}</h4><span class="rating">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</span></div><p style="font-size:13px;color:var(--text-light);margin:6px 0">${r.text}</p><p style="font-size:11px;color:#999">${r.user} • ${r.date}</p></div>`).join(''):"<p style='color:var(--text-light);padding:12px'>No reviews yet.</p>";}
+
+function subscribeNow(price,plan){
+  clickSound();
+  price=price||599;
+  plan=plan||'Premium';
+  if(!confirm('Subscribe to HealthMate '+plan+' for ₹'+price+'/month?'))return;
+  paySound();
+  localStorage.setItem('healthmate_premium','true');
+  localStorage.setItem('healthmate_plan',JSON.stringify({plan,price,date:new Date().toISOString()}));
+  savePayment({id:'sub_'+Date.now(),type:'Subscription',for:plan+' Plan',amount:price,date:new Date().toLocaleString(),status:'Paid'});
+  showToast(plan+' activated · ₹'+price+'/month');
+}
+function exportPatientData(){const list=getAppointments();if(!list.length){showToast("No data to export");return;}const headers=["ID","Patient","Age","Gender","Phone","Doctor","Department","Date","Time","Status","Type","Reason"];const rows=list.map(a=>[a.id,a.patientName,a.age,a.gender,a.phone,a.doctor,a.department,a.date,a.time,a.status,a.type||"",(a.reason||"").replace(/,/g,";")]);const csv=[headers.join(","),...rows.map(r=>r.join(","))].join("\n");const blob=new Blob([csv],{type:"text/csv"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="HealthMate_Data_"+new Date().toISOString().slice(0,10)+".csv";a.click();URL.revokeObjectURL(url);showToast("CSV downloaded – upload to Google Drive");}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+
+// Extra click feedback on main interactive elements
+document.addEventListener('click', function(e) {
+  const t = e.target.closest('button, .time-slot, .lang-chip, .dept-card, .nav-item');
+  if (t) clickSound();
+}, true);
+
+document.getElementById("apptDate").min=new Date().toISOString().split("T")[0];
+document.getElementById("onlineDate").min=new Date().toISOString().split("T")[0];
+if(currentUser){
+  if(currentUser.role==='admin')enterAdminApp();
+  else if(currentUser.role==='doctor')enterDoctorApp();
+  else enterApp();
+}
+applyLanguage();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+</script>
+<script type="module">
+  // Firebase CDN (modular SDK) — copy from Firebase Console → CDN
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfaDFM2-fWlbqA0xVfBYlukYgIppUFF98",
+    authDomain: "healthmate-e5c3f.firebaseapp.com",
+    databaseURL: "https://healthmate-e5c3f-default-rtdb.firebaseio.com",
+    projectId: "healthmate-e5c3f",
+    storageBucket: "healthmate-e5c3f.firebasestorage.app",
+    messagingSenderId: "84784646835",
+    appId: "1:84784646835:web:301a92a3222921c4883ec6",
+    measurementId: "G-BQN7N24FEZ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // Expose for app use
+  window.firebaseApp = app;
+  window.firebaseAnalytics = analytics;
+  window.firebaseConfig = firebaseConfig;
+</script>
+</body>
+</html>
